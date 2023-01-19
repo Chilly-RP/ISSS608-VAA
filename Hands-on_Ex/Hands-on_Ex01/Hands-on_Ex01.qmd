@@ -26,3 +26,584 @@ ggplot(data = exam_data,
        aes(x = RACE)) +
   geom_bar()
 ```
+
+# R Graphics VS ggplot
+
+## R Graphics
+
+```{r}
+hist(exam_data$MATHS)
+```
+
+## ggplot2
+
+```{r}
+ggplot(data = exam_data, aes(x=MATHS)) +
+  geom_histogram(bins = 10,
+                 boundary=100,
+                 color="black",
+                 fill="grey")+
+  ggtitle("Distribution of Maths Scores")
+```
+
+## Then, why ggplot2?
+
+The transferable skills from ggplot2 are not the idiosyncrasies of plotting syntax, but a powerful way of thinking about visualization, as a way of mapping between variables and the visual properties of geometric objects that you can perceive.
+
+## The `ggplot()` Function and Data Argument
+
+```{r}
+ggplot(data=exam_data)
+```
+
+## Working with `aes()`
+
+-   The code chunk on the right add the aesthetic element into the plot
+
+```{r}
+ggplot(data = exam_data,
+       aes(x=MATHS))
+```
+
+-   Notice that `ggplot` includes the x-axis and the axis's label
+
+## Geometric Objects: geom_bar
+
+The code chunk below plots a bar chart by using `geom_bar()`
+
+```{r}
+ggplot(data = exam_data,
+       aes(x=RACE)) +
+  geom_bar()
+```
+
+## Geometric Objects: `geom_dotplot`
+
+```{r}
+ggplot(data = exam_data,
+       aes(x=MATHS))+
+  geom_dotplot(dotsize = 0.5)
+```
+
+## Geometric Objects: `geom_dotplot`
+
+The code chunk below performs the following two steps:
+
+-   `scale_y_continous()` is used to turn off the y-axis, and
+
+-   binwidth argument is used to change the binwidth to 2.5.
+
+```{r}
+ggplot(data = exam_data,
+       aes(x=MATHS))+
+  geom_dotplot(binwidth = 2.5,
+               dotsize = 0.5)+
+  scale_y_continuous(NULL, breaks=NULL)
+```
+
+## Geometric Objects: geom_histogram()
+
+In the code chunk below, `geom_histogram()` is used to create a simple histogram by using values in *MATHS* filed of *exam_data*
+
+```{r}
+ggplot(data=exam_data,
+       aes(x=MATHS))+
+  geom_histogram()
+```
+
+## Modifying a geometric object by changing `geom()`
+
+In the code chunk below,
+
+-   *bins* argument is used to change the number of bins to 20,
+
+-   *fill* argument is used to shade the histogram with light blue color,
+
+-   *color* argument is used to change the outline colour of the bars in black
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20,            
+                 color="black",      
+                 fill="light blue")  
+```
+
+## Modifying a geometric object by changing *aes()*
+
+-   The code chunk below changes the interior colour of the histogram (i.e. *fill*) by using sub-group of *aesthetic()*.
+
+    ```{r}
+    ggplot(data=exam_data, 
+           aes(x= MATHS, 
+               fill = GENDER)) +
+      geom_histogram(bins=20, 
+                     color="grey30")
+    ```
+
+### Geometric Objects: geom-density
+
+[`geom-density()`](https://ggplot2.tidyverse.org/reference/geom_density.html) computes and plots kernel density estimate, which is a smoothed version of the histogram.
+
+It is a useful alternative to the histogram for continuous data that comes from an underlying smooth distribution.
+
+The code below plots the distribution of Maths scores in a kernel density estimate plot.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_density()           
+```
+
+### Geometric Objects: geom-density
+
+The code chunk below plots two kernel density lines by using *colour* or *fill* arguments of *aes()*
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x = MATHS, 
+           colour = GENDER)) +
+  geom_density()
+```
+
+### Geometric Objects: geom_boxplot
+
+-   [`geom_boxplot()`](https://ggplot2.tidyverse.org/reference/geom_boxplot.html) displays continuous value list. It visualises five summary statistics (the median, two hinges and two whiskers), and all \"outlying\" points individually.\
+
+-   The code chunk below plots boxplots by using *geom_boxplot()*.\]
+
+    ```{r}
+    ggplot(data=exam_data, 
+           aes(y = MATHS,       
+               x= GENDER)) +    
+      geom_boxplot()            
+    ```
+
+### Geometric Objects: geom_boxplot
+
+**Notches** are used in box plots to help visually assess whether the medians of distributions differ. If the notches do not overlap, this is evidence that the medians are different.
+
+The code chunk below plots the distribution of Maths scores by gender in notched plot instead of boxplot.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_boxplot(notch=TRUE)
+```
+
+### *geom* objects can be combined
+
+The code chunk below plots the data points on the boxplots by using both `geom_boxplot()` and `geom_point()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_boxplot() +              #<<      
+  geom_point(position="jitter", #<<
+             size = 0.5)        #<<
+```
+
+### Geometric Objects: geom_violin
+
+[`geom_violin`](https://ggplot2.tidyverse.org/reference/geom_violin.html) is designed for creating violin plot. Violin plots are a way of comparing multiple data distributions. With ordinary density curves, it is difficult to compare more than just a few distributions because the lines visually interfere with each other. With a violin plot, it\'s easier to compare several distributions since they\'re placed side by side.
+
+The code below plot the distribution of Maths score by gender in violin plot.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_violin()
+```
+
+### Geometric Objects: `geom_violin()` and `geom_boxplot()`
+
+The code chunk below combined a violin plot and a boxplot to show the distribution of Maths scores by gender.\]
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) +
+  geom_violin(fill="light blue") +
+  geom_boxplot(alpha=0.5)           
+```
+
+### Geometric Objects: `geom_point()`
+
+-   [`geom_point()`](https://ggplot2.tidyverse.org/reference/geom_point.html) is especially useful for creating scatterplot.
+
+-   The code chunk below plots a scatterplot showing the Maths and English grades of pupils by using `geom_point()`.
+
+    ```{r}
+    ggplot(data=exam_data, 
+           aes(x= MATHS, 
+               y=ENGLISH)) +
+      geom_point()            
+    ```
+
+### Statistics, *stat*
+
+-   The Statistics functions statistically transform data, usually as some form of summary. For example:
+
+    -   frequency of values of a variable (bar graph)
+
+    -   a mean
+
+    -   a confidence limit
+
+-   There are two ways to use these functions:
+
+    -   add a `stat_()` function and override the default geom, or
+
+add a `geom_()` function and override the default stat.
+
+### Working with stat
+
+-   The boxplots on the right are incomplete because the positions of the means were not shown.
+
+-   Next two slides will show you how to add the mean values on the boxplots.
+
+### Working with stat - the *stat_summary()* method
+
+The code chunk below adds mean values by using [`stat_summary()`](https://ggplot2.tidyverse.org/reference/stat_summary.html) function and overriding the default geom.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot() +
+  stat_summary(geom = "point",       
+               fun.y="mean",         
+               colour ="red",        
+               size=4)               
+```
+
+### Working with stat - the `geom()` method
+
+The code chunk below adding mean values by using `geom_()` function and overriding the default stat.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot() +
+  geom_point(stat="summary",        
+             fun.y="mean",           
+             colour ="red",          
+             size=4)          
+```
+
+### How to add a best fit curve on a scatterplot?
+
+-   The scatter plot on the right shows the relationship of Maths and English grades of pupils.
+
+-   The interpretability of this graph can be improved by adding a best fit curve.
+
+### How to add a best fit curve on a scatterplot?
+
+In the code chunk below, [`geom_smooth()`](https://ggplot2.tidyverse.org/reference/geom_smooth.html) is used to plot a best fit curve on the scatterplot.
+
+The default method used is *loess*.\]
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(size=0.5)
+```
+
+### How to add a best fit curve on a scatterplot?
+
+The default smoothing method can be overridden as shown below.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              size=0.5)
+```
+
+### Facets
+
+-   Facetting generates small multiples (sometimes also called trellis plot), each displaying a different subset of the data.
+
+-   Facets are an alternative to aesthetics for displaying additional discrete variables.
+
+-   ggplot2 supports two types of factes, namely: `facet_grid()` and `facet_wrap`.
+
+### `facet_wrap()`
+
+-   [`facet_wrap`](https://ggplot2.tidyverse.org/reference/facet_wrap.html) wraps a 1d sequence of panels into 2d.
+
+-   This is generally a better use of screen space than facet_grid because most displays are roughly rectangular.
+
+### Working with `facet_wrap()`
+
+The code chunk below plots a trellis plot using `facet-wrap()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20) +
+    facet_wrap(~ CLASS)
+```
+
+### `facet_grid()` function
+
+-   [`facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html) forms a matrix of panels defined by row and column facetting variables.
+
+-   It is most useful when you have two discrete variables, and all combinations of the variables exist in the data.
+
+### Working with `facet_grid()`
+
+The code chunk below plots a trellis plot using `facet_grid()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20) +
+    facet_grid(~ CLASS)
+```
+
+### Working with facet
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= CLASS)) +
+  geom_boxplot() +
+  facet_grid(~ GENDER)
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= CLASS)) +
+  geom_boxplot() +
+  facet_grid(GENDER ~.)
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot() +
+    facet_grid(GENDER ~ CLASS)
+```
+
+### Coordinates
+
+-   The *Coordinates* functions map the position of objects onto the plane of the plot.
+
+-   There are a number of different possible coordinate systems to use, they are:
+
+    -   [`coord_cartesian()`](https://ggplot2.tidyverse.org/reference/coord_cartesian.html): the default cartesian coordinate systems, where you specify x and y values (e.g. allows you to zoom in or out).
+
+    -   [`coord_flip()`](https://ggplot2.tidyverse.org/reference/coord_flip.html): a cartesian system with the x and y flipped.
+
+    -   [`coord_fixed()`](https://ggplot2.tidyverse.org/reference/coord_fixed.html): a cartesian system with a \"fixed\" aspect ratio (e.g. 1.78 for a \"widescreen\" plot).
+
+    -   [`coord_quickmap()`](https://ggplot2.tidyverse.org/reference/coord_map.html): a coordinate system that approximates a good aspect ratio for maps.
+
+### Working with Coordinate
+
+By the default, the bar chart of ggplot2 is in vertical form.
+
+The code chunk below flips the horizontal bar chart into vertical bar chart by using `coord_flip()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip()
+```
+
+### Working with Coordinate
+
+#### How to change to the y- and x-axis range?
+
+The scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.
+
+The code chunk below fixed both the y-axis and x-axis range from 0-100.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS, y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              size=0.5) +  
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+```
+
+### Themes
+
+-   Themes control elements of the graph not related to the data. For example:
+
+    -   background colour
+
+    -   size of fonts
+
+    -   gridlines
+
+    -   colour of labels
+
+-   Built-in themes include:
+
+    -   `theme_gray()` (default)
+
+    -   `theme_bw()`
+
+    -   `theme_classic()`
+
+-   A list of theme can be found at this [link](https://ggplot2.tidyverse.org/reference/ggtheme.html).
+
+-   Each theme element can be conceived of as either a line (e.g. x-axis), a rectangle (e.g. graph background), or text (e.g. axis title).
+
+### Working with theme
+
+The code chunk below plot a horizontal bar chart using `theme_gray()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_gray()
+```
+
+A horizontal bar chart plotted using `theme_classic()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_classic()
+```
+
+A horizontal bar chart plotted using `theme_minimal()`.
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal()
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=RACE)) +
+  geom_bar() +
+  coord_flip() +
+  theme_minimal() +
+  theme(panel.background = element_rect(
+    fill = "lightblue",
+    colour = "lightblue",
+    size = 0.5,
+    linetype = "solid"),
+    panel.grid.major = element_line(
+      size = 0.5,
+      linetype = 'solid',
+      colour = "white"), 
+    panel.grid.minor = element_line(
+      size = 0.25,
+      linetype = 'solid',
+      colour = "white"))
+```
+
+### The original design
+
+A simple vertical bar chart for frequency analysis. Critics:
+
+-   y-aixs label is not clear (i.e. count)
+
+-   To support effective comparison, the bars should be sorted by their resepctive frequencies.
+
+-   For static graph, frequency values should be added to provide addition information.
+
+```{r}
+ggplot(data=exam_data,
+       aes(x=reorder(RACE,RACE,
+                function(x)-length(x))))+
+  geom_bar() +
+  ylim(0,220) +
+  geom_text(stat="count", 
+      aes(label=paste0(..count.., ", ", 
+      round(..count../sum(..count..)*100,
+            1), "%")),
+      vjust=-1) +
+  xlab("Race") +
+  ylab("No. of\nPupils") +
+  theme(axis.title.y=element_text(angle = 0))
+```
+
+### The makeover design
+
+This code chunk uses [`fct_infreq()`](https://forcats.tidyverse.org/reference/fct_inorder.html) of [**forcats**](https://forcats.tidyverse.org/articles/forcats.html) package.
+
+```{r}
+exam_data %>%
+  mutate(RACE = fct_infreq(RACE)) %>%
+  ggplot(aes(x = RACE)) + 
+  geom_bar()+
+  ylim(0,220) +
+  geom_text(stat="count", 
+      aes(label=paste0(..count.., ", ", 
+      round(..count../sum(..count..)*100,
+            1), "%")),
+      vjust=-1) +
+  xlab("Race") +
+  ylab("No. of\nPupils") +
+  theme(axis.title.y=element_text(angle = 0))
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x= MATHS)) +
+  geom_histogram(bins=20, 
+                 color="black", 
+                 fill="light blue") +
+  geom_vline(aes(xintercept=mean(MATHS,
+                                 na.rm=T)),
+             color="red", 
+             linetype="dashed", 
+             size=1) +
+  geom_vline(aes(xintercept=median(MATHS,
+                                  na.rm=T)),
+             color="grey30",
+             linetype="dashed", 
+             size=1)
+```
+
+### The original design
+
+The histograms on the left are elegantly designed but not informative. This is because they only reveal the distribution of English scores by gender but without context such as all pupils.
+
+```{r}
+d <- exam_data   
+d_bg <- d[, -3]  
+
+ggplot(d, aes(x = ENGLISH, fill = GENDER)) +
+  geom_histogram(data = d_bg, fill = "grey", alpha = .5) +
+  geom_histogram(colour = "black") +
+  facet_wrap(~ GENDER) +
+  guides(fill = FALSE) +  
+  theme_bw()
+```
+
+```{r}
+ggplot(data=exam_data, 
+       aes(x=MATHS, y=ENGLISH)) +
+  geom_point() +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100)) +
+  geom_hline(yintercept=50,
+             linetype="dashed",
+             color="grey60",
+             size=1) + 
+  geom_vline(xintercept=50, 
+             linetype="dashed",
+             color="grey60",
+             size=1)
+```
