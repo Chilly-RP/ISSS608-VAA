@@ -154,6 +154,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>  
     </ul>
   </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Take-home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html">
+ <span class="dropdown-text">Take-home Exercise 1</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">In-class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex02/In-class_Ex02.html">
+ <span class="dropdown-text">In-class Exercise 2</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -189,16 +211,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#r-graphics" id="toc-r-graphics" class="nav-link" data-scroll-target="#r-graphics">R Graphics</a></li>
   <li><a href="#ggplot2" id="toc-ggplot2" class="nav-link" data-scroll-target="#ggplot2">ggplot2</a></li>
-  <li><a href="#then-why-ggplot2" id="toc-then-why-ggplot2" class="nav-link" data-scroll-target="#then-why-ggplot2">Then, why ggplot2?</a></li>
-  <li><a href="#the-ggplot-function-and-data-argument" id="toc-the-ggplot-function-and-data-argument" class="nav-link" data-scroll-target="#the-ggplot-function-and-data-argument">The <code>ggplot()</code> Function and Data Argument</a></li>
   <li><a href="#working-with-aes" id="toc-working-with-aes" class="nav-link" data-scroll-target="#working-with-aes">Working with <code>aes()</code></a></li>
   <li><a href="#geometric-objects-geom_bar" id="toc-geometric-objects-geom_bar" class="nav-link" data-scroll-target="#geometric-objects-geom_bar">Geometric Objects: geom_bar</a></li>
   <li><a href="#geometric-objects-geom_dotplot" id="toc-geometric-objects-geom_dotplot" class="nav-link" data-scroll-target="#geometric-objects-geom_dotplot">Geometric Objects: <code>geom_dotplot</code></a></li>
   <li><a href="#geometric-objects-geom_dotplot-1" id="toc-geometric-objects-geom_dotplot-1" class="nav-link" data-scroll-target="#geometric-objects-geom_dotplot-1">Geometric Objects: <code>geom_dotplot</code></a></li>
   <li><a href="#geometric-objects-geom_histogram" id="toc-geometric-objects-geom_histogram" class="nav-link" data-scroll-target="#geometric-objects-geom_histogram">Geometric Objects: geom_histogram()</a></li>
   <li><a href="#modifying-a-geometric-object-by-changing-geom" id="toc-modifying-a-geometric-object-by-changing-geom" class="nav-link" data-scroll-target="#modifying-a-geometric-object-by-changing-geom">Modifying a geometric object by changing <code>geom()</code></a></li>
-  <li><a href="#modifying-a-geometric-object-by-changing-aes" id="toc-modifying-a-geometric-object-by-changing-aes" class="nav-link" data-scroll-target="#modifying-a-geometric-object-by-changing-aes">Modifying a geometric object by changing <em>aes()</em></a>
-  <ul class="collapse">
+  <li><a href="#modifying-a-geometric-object-by-changing-aes" id="toc-modifying-a-geometric-object-by-changing-aes" class="nav-link" data-scroll-target="#modifying-a-geometric-object-by-changing-aes">Modifying a geometric object by changing <em>aes()</em></a></li>
   <li><a href="#geometric-objects-geom-density" id="toc-geometric-objects-geom-density" class="nav-link" data-scroll-target="#geometric-objects-geom-density">Geometric Objects: geom-density</a></li>
   <li><a href="#geometric-objects-geom-density-1" id="toc-geometric-objects-geom-density-1" class="nav-link" data-scroll-target="#geometric-objects-geom-density-1">Geometric Objects: geom-density</a></li>
   <li><a href="#geometric-objects-geom_boxplot" id="toc-geometric-objects-geom_boxplot" class="nav-link" data-scroll-target="#geometric-objects-geom_boxplot">Geometric Objects: geom_boxplot</a></li>
@@ -228,7 +247,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#the-original-design" id="toc-the-original-design" class="nav-link" data-scroll-target="#the-original-design">The original design</a></li>
   <li><a href="#the-makeover-design" id="toc-the-makeover-design" class="nav-link" data-scroll-target="#the-makeover-design">The makeover design</a></li>
   <li><a href="#the-original-design-1" id="toc-the-original-design-1" class="nav-link" data-scroll-target="#the-original-design-1">The original design</a></li>
-  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -298,8 +316,8 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 </section>
 <section id="r-graphics-vs-ggplot" class="level1">
 <h1>R Graphics VS ggplot</h1>
-<section id="r-graphics" class="level2">
-<h2 class="anchored" data-anchor-id="r-graphics">R Graphics</h2>
+<section id="r-graphics" class="level3">
+<h3 class="anchored" data-anchor-id="r-graphics">R Graphics</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(exam_data<span class="sc">$</span>MATHS)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -307,8 +325,8 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 </div>
 </div>
 </section>
-<section id="ggplot2" class="level2">
-<h2 class="anchored" data-anchor-id="ggplot2">ggplot2</h2>
+<section id="ggplot2" class="level3">
+<h3 class="anchored" data-anchor-id="ggplot2">ggplot2</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> exam_data, <span class="fu">aes</span>(<span class="at">x=</span>MATHS)) <span class="sc">+</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">10</span>,</span>
@@ -320,13 +338,12 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 <p><img src="Hands-on_Ex01_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="then-why-ggplot2" class="level2">
-<h2 class="anchored" data-anchor-id="then-why-ggplot2">Then, why ggplot2?</h2>
+<section id="then-why-ggplot2" class="level4">
+<h4 class="anchored" data-anchor-id="then-why-ggplot2">Then, why ggplot2?</h4>
 <p>The transferable skills from ggplot2 are not the idiosyncrasies of plotting syntax, but a powerful way of thinking about visualization, as a way of mapping between variables and the visual properties of geometric objects that you can perceive.</p>
 </section>
-<section id="the-ggplot-function-and-data-argument" class="level2">
-<h2 class="anchored" data-anchor-id="the-ggplot-function-and-data-argument">The <code>ggplot()</code> Function and Data Argument</h2>
+<section id="the-ggplot-function-and-data-argument" class="level4">
+<h4 class="anchored" data-anchor-id="the-ggplot-function-and-data-argument">The <code>ggplot()</code> Function and Data Argument</h4>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
@@ -334,8 +351,9 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 </div>
 </div>
 </section>
-<section id="working-with-aes" class="level2">
-<h2 class="anchored" data-anchor-id="working-with-aes">Working with <code>aes()</code></h2>
+</section>
+<section id="working-with-aes" class="level3">
+<h3 class="anchored" data-anchor-id="working-with-aes">Working with <code>aes()</code></h3>
 <ul>
 <li>The code chunk on the right add the aesthetic element into the plot</li>
 </ul>
@@ -350,8 +368,8 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 <li>Notice that <code>ggplot</code> includes the x-axis and the axis’s label</li>
 </ul>
 </section>
-<section id="geometric-objects-geom_bar" class="level2">
-<h2 class="anchored" data-anchor-id="geometric-objects-geom_bar">Geometric Objects: geom_bar</h2>
+<section id="geometric-objects-geom_bar" class="level3">
+<h3 class="anchored" data-anchor-id="geometric-objects-geom_bar">Geometric Objects: geom_bar</h3>
 <p>The code chunk below plots a bar chart by using <code>geom_bar()</code></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> exam_data,</span>
@@ -362,8 +380,8 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 </div>
 </div>
 </section>
-<section id="geometric-objects-geom_dotplot" class="level2">
-<h2 class="anchored" data-anchor-id="geometric-objects-geom_dotplot">Geometric Objects: <code>geom_dotplot</code></h2>
+<section id="geometric-objects-geom_dotplot" class="level3">
+<h3 class="anchored" data-anchor-id="geometric-objects-geom_dotplot">Geometric Objects: <code>geom_dotplot</code></h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> exam_data,</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span>MATHS))<span class="sc">+</span></span>
@@ -377,8 +395,8 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 </div>
 </div>
 </section>
-<section id="geometric-objects-geom_dotplot-1" class="level2">
-<h2 class="anchored" data-anchor-id="geometric-objects-geom_dotplot-1">Geometric Objects: <code>geom_dotplot</code></h2>
+<section id="geometric-objects-geom_dotplot-1" class="level3">
+<h3 class="anchored" data-anchor-id="geometric-objects-geom_dotplot-1">Geometric Objects: <code>geom_dotplot</code></h3>
 <p>The code chunk below performs the following two steps:</p>
 <ul>
 <li><p><code>scale_y_continous()</code> is used to turn off the y-axis, and</p></li>
@@ -395,8 +413,8 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 </div>
 </div>
 </section>
-<section id="geometric-objects-geom_histogram" class="level2">
-<h2 class="anchored" data-anchor-id="geometric-objects-geom_histogram">Geometric Objects: geom_histogram()</h2>
+<section id="geometric-objects-geom_histogram" class="level3">
+<h3 class="anchored" data-anchor-id="geometric-objects-geom_histogram">Geometric Objects: geom_histogram()</h3>
 <p>In the code chunk below, <code>geom_histogram()</code> is used to create a simple histogram by using values in <em>MATHS</em> filed of <em>exam_data</em></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data,</span>
@@ -410,8 +428,8 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 </div>
 </div>
 </section>
-<section id="modifying-a-geometric-object-by-changing-geom" class="level2">
-<h2 class="anchored" data-anchor-id="modifying-a-geometric-object-by-changing-geom">Modifying a geometric object by changing <code>geom()</code></h2>
+<section id="modifying-a-geometric-object-by-changing-geom" class="level3">
+<h3 class="anchored" data-anchor-id="modifying-a-geometric-object-by-changing-geom">Modifying a geometric object by changing <code>geom()</code></h3>
 <p>In the code chunk below,</p>
 <ul>
 <li><p><em>bins</em> argument is used to change the number of bins to 20,</p></li>
@@ -429,8 +447,8 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 </div>
 </div>
 </section>
-<section id="modifying-a-geometric-object-by-changing-aes" class="level2">
-<h2 class="anchored" data-anchor-id="modifying-a-geometric-object-by-changing-aes">Modifying a geometric object by changing <em>aes()</em></h2>
+<section id="modifying-a-geometric-object-by-changing-aes" class="level3">
+<h3 class="anchored" data-anchor-id="modifying-a-geometric-object-by-changing-aes">Modifying a geometric object by changing <em>aes()</em></h3>
 <ul>
 <li><p>The code chunk below changes the interior colour of the histogram (i.e.&nbsp;<em>fill</em>) by using sub-group of <em>aesthetic()</em>.</p>
 <div class="cell">
@@ -444,6 +462,7 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 </div>
 </div></li>
 </ul>
+</section>
 <section id="geometric-objects-geom-density" class="level3">
 <h3 class="anchored" data-anchor-id="geometric-objects-geom-density">Geometric Objects: geom-density</h3>
 <p><a href="https://ggplot2.tidyverse.org/reference/geom_density.html"><code>geom-density()</code></a> computes and plots kernel density estimate, which is a smoothed version of the histogram.</p>
@@ -1006,7 +1025,6 @@ of ggplot2 3.3.4.</code></pre>
 </div>
 
 
-</section>
 </section>
 </section>
 

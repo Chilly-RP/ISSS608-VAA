@@ -29,13 +29,13 @@ ggplot(data = exam_data,
 
 # R Graphics VS ggplot
 
-## R Graphics
+### R Graphics
 
 ```{r}
 hist(exam_data$MATHS)
 ```
 
-## ggplot2
+### ggplot2
 
 ```{r}
 ggplot(data = exam_data, aes(x=MATHS)) +
@@ -46,17 +46,17 @@ ggplot(data = exam_data, aes(x=MATHS)) +
   ggtitle("Distribution of Maths Scores")
 ```
 
-## Then, why ggplot2?
+#### Then, why ggplot2?
 
 The transferable skills from ggplot2 are not the idiosyncrasies of plotting syntax, but a powerful way of thinking about visualization, as a way of mapping between variables and the visual properties of geometric objects that you can perceive.
 
-## The `ggplot()` Function and Data Argument
+#### The `ggplot()` Function and Data Argument
 
 ```{r}
 ggplot(data=exam_data)
 ```
 
-## Working with `aes()`
+### Working with `aes()`
 
 -   The code chunk on the right add the aesthetic element into the plot
 
@@ -67,7 +67,7 @@ ggplot(data = exam_data,
 
 -   Notice that `ggplot` includes the x-axis and the axis's label
 
-## Geometric Objects: geom_bar
+### Geometric Objects: geom_bar
 
 The code chunk below plots a bar chart by using `geom_bar()`
 
@@ -77,7 +77,7 @@ ggplot(data = exam_data,
   geom_bar()
 ```
 
-## Geometric Objects: `geom_dotplot`
+### Geometric Objects: `geom_dotplot`
 
 ```{r}
 ggplot(data = exam_data,
@@ -85,7 +85,7 @@ ggplot(data = exam_data,
   geom_dotplot(dotsize = 0.5)
 ```
 
-## Geometric Objects: `geom_dotplot`
+### Geometric Objects: `geom_dotplot`
 
 The code chunk below performs the following two steps:
 
@@ -101,7 +101,7 @@ ggplot(data = exam_data,
   scale_y_continuous(NULL, breaks=NULL)
 ```
 
-## Geometric Objects: geom_histogram()
+### Geometric Objects: geom_histogram()
 
 In the code chunk below, `geom_histogram()` is used to create a simple histogram by using values in *MATHS* filed of *exam_data*
 
@@ -111,7 +111,7 @@ ggplot(data=exam_data,
   geom_histogram()
 ```
 
-## Modifying a geometric object by changing `geom()`
+### Modifying a geometric object by changing `geom()`
 
 In the code chunk below,
 
@@ -129,7 +129,7 @@ ggplot(data=exam_data,
                  fill="light blue")  
 ```
 
-## Modifying a geometric object by changing *aes()*
+### Modifying a geometric object by changing *aes()*
 
 -   The code chunk below changes the interior colour of the histogram (i.e. *fill*) by using sub-group of *aesthetic()*.
 
