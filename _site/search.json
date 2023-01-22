@@ -32,6 +32,20 @@
     "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#age-sex-pyramid-in-9-selected-area-using-trellis-display",
     "title": "Take-home Exercise 1",
     "section": "1.0 Age-sex Pyramid in 9 Selected Area using Trellis Display",
-    "text": "1.0 Age-sex Pyramid in 9 Selected Area using Trellis Display\n\n1.1 Sketch of Proposed Design\nFor 1 single sheet:\n\n\n\n\n\n\n\n1.2 Clarity\n\nContent: The proposed design used male and female population, age group and location. We need to calculate the individual population using the total population by ourselves.\nX-axis: It has a duo axis, the population is in the bottom and the percentage of total population for each sex is on the top.\nY-axis: It shows the different age groups.\nLegend: In the legend I put the percentage of total population.\n\n\n\n1.3 Aesthetics\n\n\n1.4 Proposed Visualization on Tableau\n\n\n\n\n\n\n\n2.0 Step-by-step Preparation\n\n\n\n\n\n\n\n\nNo.\nStep\nAction\n\n\n\n\n1\nLoad the CSV file into Tableau\n\n\n\n2\nGo to sheet 1 tab and create calculation field for Population\n\n\n\n3\nAdd the query and filter out the population for both Male and Female."
+    "text": "1.0 Age-sex Pyramid in 9 Selected Area using Trellis Display\n\n1.1 Sketch of Proposed Design\nFor 1 single sheet:\n\n\n\n1.2 Clarity\n\nContent: The proposed design used male and female population, age group and location. We need to calculate the individual population using the total population by ourselves.\nX-axis: The x-axis should has the same scale for every plots.\nY-axis: It shows the different age groups.\nLegend: In the legend I put the percentage of total population.\n\n\n\n1.3 Aesthetics\n\nChoose of color palette\nThe pink color is often associate with women, hence I use pink color for female population to give audience a better understanding.\n\n\n\n1.4 Proposed Visualization on Tableau"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#step-by-step-preparation",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#step-by-step-preparation",
+    "title": "Take-home Exercise 1",
+    "section": "2.0 Step-by-step Preparation",
+    "text": "2.0 Step-by-step Preparation\n\nNo. Step Action\n\n\n\n\n\n\n\nNo.\nStep\nAction\n\n\n\n\n1\nLoad the CSV file into Tableau\n\n\n\n2\nGo to sheet 1 tab and create calculation field for Population\n\n\n\n3\nAdd the query and filter out the population for both Male and Female.\n\n\n\n\n4\nDrag Age to the rows and 2 population to the columns.\n\n\n\n5\nDrag PA to the filters, and select Ang Mo Kio.\n\n\n\n\n6\nEdit Axis of Female. Check reversed for Female and change the tick interval to fixed 1,000 under tick marks tab.\n\n\n\n\n7\nChange the bar color for female and add label for both female and male. Then sort the y-axis in descending order.\n\n\n\n8\nChange the Title to the dynamic format of location.\n\n\n\n9\nDuplicate the sheet 9 times and change the location filter\n\n\n\n10\nCreate the dashboard"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#insights-from-visualization",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#insights-from-visualization",
+    "title": "Take-home Exercise 1",
+    "section": "3.0 Insights From Visualization",
+    "text": "3.0 Insights From Visualization\nFrom the 9 plots, first, we can see that Singapore has lower percentage of young people. This shows that the next two decades will usher in an aging society. Second, we can see that in the common resident area, age 60-64 is the primary group which has most population, however in downtown area, age 35-39 are the major group, which represents the people in this aging group earns more."
   }
 ]

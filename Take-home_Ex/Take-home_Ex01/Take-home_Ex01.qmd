@@ -20,13 +20,13 @@ You can fund the links to download the dataset below:
 
 For 1 single sheet:
 
-![](/Take-home_Ex/pic/Proposal.png){fig-align="center"}
+![](/Take-home_Ex/pic/Age-sex%20pyramid%20(Ang%20Mokio).png)
 
 ### 1.2 Clarity
 
 -   **Content:** The proposed design used male and female population, age group and location. We need to calculate the individual population using the total population by ourselves.
 
--   **X-axis:** It has a duo axis, the population is in the bottom and the percentage of total population for each sex is on the top.
+-   **X-axis:** The x-axis should has the same scale for every plots.
 
 -   **Y-axis:** It shows the different age groups.
 
@@ -34,20 +34,48 @@ For 1 single sheet:
 
 ### 1.3 Aesthetics
 
+-   Choose of color palette
+
+    The pink color is often associate with women, hence I use pink color for female population to give audience a better understanding.
+
 ### 1.4 Proposed Visualization on Tableau
 
-![](/Take-home_Ex/pic/dashboard.png){fig-align="center"}
+![](/Take-home_Ex/pic/proposal2.png)
 
-### 2.0 Step-by-step Preparation
+## 2.0 Step-by-step Preparation
 
-+--------+-------------------------------------------------------------------------------+--------------------------------------+
-| No.    | Step                                                                          | Action                               |
-+========+===============================================================================+======================================+
-| 1      | Load the CSV file into Tableau                                                | ![](/Take-home_Ex/pic/1.png)         |
-+--------+-------------------------------------------------------------------------------+--------------------------------------+
-| 2      | Go to sheet 1 tab and create calculation field for **Population**             | ![](/Take-home_Ex/pic/2.png)         |
-+--------+-------------------------------------------------------------------------------+--------------------------------------+
-| 3      | Add the query and filter out the population for both **Male** and **Female**. | ![](/Take-home_Ex/pic/3.png)         |
-|        |                                                                               |                                      |
-|        |                                                                               | ![](/Take-home_Ex/pic/3-1.png)       |
-+--------+-------------------------------------------------------------------------------+--------------------------------------+
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+| No.        | Step                                                                                                                 | Action                                      |
++:==========:+:====================================================================================================================:+:===========================================:+
+| 1          | Load the CSV file into Tableau                                                                                       | ![](/Take-home_Ex/pic/1.png){width="1272"}  |
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+| 2          | Go to sheet 1 tab and create calculation field for **Population**                                                    | ![](/Take-home_Ex/pic/2.png)                |
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+| 3          | Add the query and filter out the population for both **Male** and **Female**.                                        | ![](/Take-home_Ex/pic/3.png){width="1230"}  |
+|            |                                                                                                                      |                                             |
+|            |                                                                                                                      | ![](/Take-home_Ex/pic/3-1.png)              |
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+| 4          | Drag **Age** to the rows and 2 population to the columns.                                                            | ![](/Take-home_Ex/pic/4.png)                |
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+| 5          | Drag **PA** to the filters, and select *Ang Mo Kio*.                                                                 | ![](/Take-home_Ex/pic/5.png)                |
+|            |                                                                                                                      |                                             |
+|            |                                                                                                                      | ![](/Take-home_Ex/pic/5-1.png){width="970"} |
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+| 6          | Edit Axis of **Female.** Check reversed for Female and change the tick interval to fixed 1,000 under tick marks tab. | ![](/Take-home_Ex/pic/6.png)                |
+|            |                                                                                                                      |                                             |
+|            |                                                                                                                      | ![](/Take-home_Ex/pic/6-1.png)              |
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+| 7          | Change the bar color for female and add label for both female and male. Then sort the y-axis in descending order.    | ![](/Take-home_Ex/pic/7.png)                |
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+| 8          | Change the Title to the dynamic format of location.                                                                  | ![](/Take-home_Ex/pic/8.png)                |
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+| 9          | Duplicate the sheet 9 times and change the location filter                                                           | ![](/Take-home_Ex/pic/9.png)                |
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+| 10         | Create the dashboard                                                                                                 | ![](/Take-home_Ex/pic/proposal2.png)        |
++------------+----------------------------------------------------------------------------------------------------------------------+---------------------------------------------+
+
+: No. Step Action {tbl-colwidths="\[5, 25, 70\]"}
+
+## 3.0 Insights From Visualization
+
+From the 9 plots, first, we can see that Singapore has lower percentage of young people. This shows that the next two decades will usher in an aging society. Second, we can see that in the common resident area, age 60-64 is the primary group which has most population, however in downtown area, age 35-39 are the major group, which represents the people in this aging group earns more.
