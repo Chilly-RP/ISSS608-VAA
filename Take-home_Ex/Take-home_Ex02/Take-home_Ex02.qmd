@@ -1,0 +1,104 @@
+---
+title: "Take-home Exercise 2"
+author: "Wang Ruipeng"
+date: "Jan 25, 2023"
+---
+
+# 1.0 Overview
+
+This take-home exercise is done based on a take-home exercise 1 submission prepared by a classmate. The peer submission will be critiqued in terms of clarity and aesthetics, and the original design will be remade using the data visualization principles and best practice learnt in Lesson 1 and 2.
+
+# 2.0 Data Preparation
+
+In this step, we will load the libraries and dataset
+
+```{r}
+# install and load libraries 
+packages = c('tidyverse', 'knitr', 'ggdist', 'scales', 'grid', 'gridExtra',
+             'formattable', 'patchwork', 'plotly')
+for(p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p, character.only = T)
+}
+```
+
+```{r}
+df <- read_csv('data/respopagesextod2022.csv')
+```
+
+```{r}
+library(rmarkdown)
+paged_table(df)
+```
+
+# 3.0 Visualization Remake Using R
+
+### 3.1 Exploration using `ggplot()`
+
+```{r}
+ggplot(df, aes (x = AG, y = Pop, fill = Sex)) +
+  geom_bar(stat = "identity") +
+  coord_flip()
+```
+
+### 3.2 Data Wrangling
+
+Transforming the data to one gender.
+
+```{r}
+Popdata_males <- df %>%
+  filter(`Sex` ==  "Males") %>%
+  mutate (Pop = -Pop)
+glimpse(Popdata_males)
+```
+
+```{r}
+Popdata_females <-df %>%
+  filter(`Sex` ==  "Females") 
+Popdata_T <- rbind(Popdata_males,Popdata_females)
+paged_table(Popdata_T)
+```
+
+### 3.3 Initial Pyramid Plot 
+
+```{r}
+ggplot(Popdata_T, aes (x = AG, y = Pop, fill = Sex)) +
+  geom_bar(stat = "identity") +
+  coord_flip()
+```
+
+### 3.4 Planning Areas
+
+```{r}
+print(unique(Popdata_T$PA))
+```
+
+### 3.5 Trellis display
+
+```{r}
+xbrks <- seq(-50000, 50000, 10000)
+xlabls <- paste0(as.character(c(seq(50, 0, -10), seq(10, 50, 10))))
+
+p <- ggplot(subset(Popdata_T, PA %in% c("Ang Mo Kio", "Sengkang", "Tampines", "Jurong East", "Bishan", "Woodlands","Yishun","Punggol","Outram")), 
+      aes (x = AG, y = Pop, fill = Sex)) +
+      geom_bar(stat = "identity", width = .9 ) +
+      scale_y_continuous(breaks = xbrks, labels = xlabls, name = "Population Size ('000)") +
+      xlab("Age Groups") +
+      coord_flip() +
+      theme_bw() 
+```
+
+```{r fig.height = 10, fig.width = 7}
+xbrks1 <- seq(-50000, 50000, 10000)
+xlabls1 <- paste0(as.character(c(seq(50, 0, -10), seq(10, 50, 10))))
+p1 <- p +  facet_wrap (~ PA, nrow = 3, ncol = 3) + 
+            xlab("Age Groups") +
+            ggtitle("Age-Sex Pyramid for Selected 9 Planning Areas by Population")+
+            scale_y_continuous(breaks = xbrks1, labels = xlabls1, name = "Population Size ('000)")
+
+ggplotly(p1)
+```
+
+Source: [*Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2022*](https://www.singstat.gov.sg/)

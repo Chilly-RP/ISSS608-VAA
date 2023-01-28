@@ -152,6 +152,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html">
  <span class="dropdown-text">Hands-on Exercise 1</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html">
+ <span class="dropdown-text">Hands-on Exercise 2</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -163,6 +167,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html">
  <span class="dropdown-text">Take-home Exercise 1</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html">
+ <span class="dropdown-text">Take-home Exercise 2</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -173,6 +181,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
         <li>
     <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex02/In-class_Ex02.html">
  <span class="dropdown-text">In-class Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../In-class_Ex/In-class_Ex03/In-class_Ex03.html">
+ <span class="dropdown-text">In-class Exercise 3</span></a>
   </li>  
     </ul>
   </li>
@@ -493,7 +505,7 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 <section id="geometric-objects-geom_boxplot" class="level3">
 <h3 class="anchored" data-anchor-id="geometric-objects-geom_boxplot">Geometric Objects: geom_boxplot</h3>
 <ul>
-<li><p><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html"><code>geom_boxplot()</code></a> displays continuous value list. It visualises five summary statistics (the median, two hinges and two whiskers), and all "outlying" points individually.<br>
+<li><p><a href="https://ggplot2.tidyverse.org/reference/geom_boxplot.html"><code>geom_boxplot()</code></a> displays continuous value list. It visualises five summary statistics (the median, two hinges and two whiskers), and all “outlying” points individually.<br>
 </p></li>
 <li><p>The code chunk below plots boxplots by using <em>geom_boxplot()</em>.]</p>
 <div class="cell">
@@ -538,7 +550,7 @@ dbl (3): ENGLISH, MATHS, SCIENCE
 </section>
 <section id="geometric-objects-geom_violin" class="level3">
 <h3 class="anchored" data-anchor-id="geometric-objects-geom_violin">Geometric Objects: geom_violin</h3>
-<p><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html"><code>geom_violin</code></a> is designed for creating violin plot. Violin plots are a way of comparing multiple data distributions. With ordinary density curves, it is difficult to compare more than just a few distributions because the lines visually interfere with each other. With a violin plot, it's easier to compare several distributions since they're placed side by side.</p>
+<p><a href="https://ggplot2.tidyverse.org/reference/geom_violin.html"><code>geom_violin</code></a> is designed for creating violin plot. Violin plots are a way of comparing multiple data distributions. With ordinary density curves, it is difficult to compare more than just a few distributions because the lines visually interfere with each other. With a violin plot, it’s easier to compare several distributions since they’re placed side by side.</p>
 <p>The code below plot the distribution of Maths score by gender in violin plot.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>exam_data, </span>
@@ -778,7 +790,7 @@ Ignoring unknown parameters: `fun.y`</code></pre>
 <ul>
 <li><p><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html"><code>coord_cartesian()</code></a>: the default cartesian coordinate systems, where you specify x and y values (e.g.&nbsp;allows you to zoom in or out).</p></li>
 <li><p><a href="https://ggplot2.tidyverse.org/reference/coord_flip.html"><code>coord_flip()</code></a>: a cartesian system with the x and y flipped.</p></li>
-<li><p><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html"><code>coord_fixed()</code></a>: a cartesian system with a "fixed" aspect ratio (e.g.&nbsp;1.78 for a "widescreen" plot).</p></li>
+<li><p><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html"><code>coord_fixed()</code></a>: a cartesian system with a “fixed” aspect ratio (e.g.&nbsp;1.78 for a “widescreen” plot).</p></li>
 <li><p><a href="https://ggplot2.tidyverse.org/reference/coord_map.html"><code>coord_quickmap()</code></a>: a coordinate system that approximates a good aspect ratio for maps.</p></li>
 </ul></li>
 </ul>
