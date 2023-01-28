@@ -2,6 +2,11 @@
 title: "Take-home Exercise 2"
 author: "Wang Ruipeng"
 date: "Jan 25, 2023"
+date-modified: "`r Sys.Date()`"
+execute: 
+  echo: true
+  eval: true
+  warning: false
 ---
 
 # 1.0 Overview
@@ -35,7 +40,31 @@ paged_table(df)
 
 # 3.0 Visualization Remake Using R
 
-### 3.1 Exploration using `ggplot()`
+### 3.1 Critique
+
+![](pic/original.png){fig-align="center"}
+
+#### Clarity
+
+-   The X-axis is very unclear, it has 2 rows at the bottom. the first row is number, audience could get confused since it could represent population or area. The last row is male and female, it could be simplly represented using the color legend to reduce the duplicates.
+
+-   The number label on the bar chart is also meaningless, some bar have but some bar don't have. Audience also won't waste time distinguish them, they could simply find the longest bar and hover on it to view the tooltip.
+
+-   The graph does not have data source caption.
+
+Aesthetics
+
+-   The graph follows the overall format of pyramid in trellis display, however looks very messy.
+
+-   The Y-axis looks very crowded, it's very hard for audience to map the bar charts with the Y label.
+
+-   The font size of title is too small, audience is hard to capture the title information.
+
+-   The margin space between rows is too big, it wasted too much space for the site name.
+
+### 3.2 Step by Step Plot Remake Using R 
+
+#### 3.2.1 Exploration using `ggplot()`
 
 ```{r}
 ggplot(df, aes (x = AG, y = Pop, fill = Sex)) +
@@ -43,7 +72,7 @@ ggplot(df, aes (x = AG, y = Pop, fill = Sex)) +
   coord_flip()
 ```
 
-### 3.2 Data Wrangling
+#### 3.2.2 Data Wrangling
 
 Transforming the data to one gender.
 
@@ -61,7 +90,7 @@ Popdata_T <- rbind(Popdata_males,Popdata_females)
 paged_table(Popdata_T)
 ```
 
-### 3.3 Initial Pyramid Plot 
+#### 3.2.3 Initial Pyramid Plot 
 
 ```{r}
 ggplot(Popdata_T, aes (x = AG, y = Pop, fill = Sex)) +
@@ -69,13 +98,13 @@ ggplot(Popdata_T, aes (x = AG, y = Pop, fill = Sex)) +
   coord_flip()
 ```
 
-### 3.4 Planning Areas
+#### 3.2.4 Planning Areas
 
 ```{r}
 print(unique(Popdata_T$PA))
 ```
 
-### 3.5 Trellis display
+#### 3.2.5 Trellis display
 
 ```{r}
 xbrks <- seq(-50000, 50000, 10000)
@@ -102,3 +131,27 @@ ggplotly(p1)
 ```
 
 Source: [*Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2022*](https://www.singstat.gov.sg/)
+
+The makeover graph kept the display template of the original graph and the overall format, and improved on a few elements:
+
+#### Clarity
+
+-   Now the X-axis label is very clear which represents the population, and right corner has the legend to clarify the representation of right and left bars.
+
+-   The number label has been removed from the bar charts. Audience can hover on a specific row to view the details.
+
+-   Added the data source caption
+
+#### Aesthetics
+
+-   The Y-axis become larger now, there are some space in between the text labels.
+
+-   The margin space between rows have been reduced, now looks more clear.
+
+-   The title of the graph is more obvious now.
+
+### 4.0 Learning Point
+
+After taken the session 2, I realized a lot of deficiencies in exercise 1. It provide me with an opportunity to fix and improve the graph design, also give me a chance to working with R. My key takeaways are:
+
+-   The graph should be as simple as possible, but the component of the graph like title, legend and caption is very important. It should be very clear and highlighted.
