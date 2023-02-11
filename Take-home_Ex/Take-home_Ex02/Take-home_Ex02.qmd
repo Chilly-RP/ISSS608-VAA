@@ -62,7 +62,7 @@ Aesthetics
 
 -   The margin space between rows is too big, it wasted too much space for the site name.
 
-### 3.2 Step by Step Plot Remake Using R 
+### 3.2 Step by Step Plot Remake Using R
 
 #### 3.2.1 Exploration using `ggplot()`
 
@@ -90,7 +90,7 @@ Popdata_T <- rbind(Popdata_males,Popdata_females)
 paged_table(Popdata_T)
 ```
 
-#### 3.2.3 Initial Pyramid Plot 
+#### 3.2.3 Initial Pyramid Plot
 
 ```{r}
 ggplot(Popdata_T, aes (x = AG, y = Pop, fill = Sex)) +
