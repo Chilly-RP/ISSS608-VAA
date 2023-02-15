@@ -176,7 +176,7 @@ gghistostats(
 
 **Analytic insights**: When analyzing the distribution of lease commencement dates for 3 room, 4 room, and 5 room HDB units, it was found that the majority of three-room second-hand HDB units had leases that commenced between 1970 and 1986, with the highest number of units having leases that commenced in 1984. The number of second-hand HDB units with leases commencing between 1986 and 2010 was very low. The lease commencement dates for second-hand 4 room and 5 room HDB units were relatively stable from 1970 to 2010 and began to increase in 2021, reaching a peak in 2018. However, due to the COVID-19 pandemic, this number dropped sharply, which also reflects the decline in HDB construction during the pandemic.
 
-### 2.5 One-way ANOVA test on English score by race
+### 2.5 One-way ANOVA test on Unit Price / sqm by Flat Type
 
 ```{r}
 p <- ggbetweenstats(
