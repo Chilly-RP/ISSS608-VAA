@@ -1,0 +1,181 @@
+---
+title: "Take-home Exercise 4"
+author: "Wang Ruipeng"
+date: "21 Feb, 2023"
+date-modified: "`r Sys.Date()`"
+execute: 
+  echo: true
+  eval: true
+  warning: false
+---
+
+## 1.0 Overview
+
+### 1.1 The Task
+
+In this take-home exercise, you are required to uncover the impact of COVID-19 as well as the global economic and political dynamic in 2022 on Singapore bi-lateral trade (i.e. Import, Export and Trade Balance) by using appropriate analytical visualisation techniques learned in **Lesson 6: It's About Time**. Students are encouraged to apply appropriate interactive techniques to enhance user and data discovery experiences.
+
+### 1.2 The Data
+
+For the purpose of this take-home exercise, [Merchandise Trade provided by Department of Statistics,](https://www.singstat.gov.sg/find-data/search-by-theme/trade-and-investment/merchandise-trade/latest-data) Singapore (DOS) will be used. The data are available under the sub-section of Merchandise Trade by Region/Market. You should download the data by clicking on the link **Download all in Excel** on the same webpage. The study period should be between **January 2020 to December 2022**.
+
+### 1.3 Loading Libraries
+
+```{r}
+pacman::p_load(scales, viridis, lubridate, ggthemes, gridExtra, readxl, knitr, data.table, CGPfunctions, ggHoriPlot, tidyverse,tidyr,janitor,tibble, plotly)
+```
+
+### 1.4 Loading Data
+
+```{r}
+imports <- read_csv("data/import.csv")
+exports <- read_csv("data/export.csv")
+```
+
+```{r}
+kable(head(imports))
+```
+
+### 1.5 Data Preprocessing
+
+#### 1.5.1 Data Frame Transpose
+
+```{r}
+imports_transposed <- imports %>%
+  select(matches("Data|202[0-2]")) %>%    # select columns containing "Data", "2020", "2021", or "2022"
+  t() %>%                                # transpose the data frame
+  row_to_names(row_number = 1) %>% 
+  as.data.frame() %>%                    # convert to a data frame
+  tibble::rownames_to_column("timestamp") %>%  # add a timestamp column using row names
+  mutate(timestamp = lubridate::ymd(paste0(timestamp, "01"))) %>%   # convert timestamp to date format
+  arrange(timestamp)                     # sort by timestamp in ascending order
+```
+
+```{r}
+exports_transposed <- exports %>%
+  select(matches("Data|202[0-2]")) %>%    # select columns containing "Data", "2020", "2021", or "2022"
+  t() %>%                                # transpose the data frame
+  row_to_names(row_number = 1) %>% 
+  as.data.frame() %>%                    # convert to a data frame
+  tibble::rownames_to_column("timestamp") %>%  # add a timestamp column using row names
+  mutate(timestamp = lubridate::ymd(paste0(timestamp, "01"))) %>%   # convert timestamp to date format
+  arrange(timestamp)                     # sort by timestamp in ascending order
+```
+
+```{r}
+kable(head(imports_transposed))
+```
+
+In this session, we worked with a dataset of import data and used R to clean and manipulate it for visualization. We started by reading in the data and then selected a subset of columns containing the years 2020-2022 using the **`select()`** function from the dplyr package. Next, we transposed the resulting dataframe using the **`t()`** function, and set the row names to the first row using the **`row_to_names()`** function from the janitor package. We then converted the row names to a "timestamp" column using the **`rownames_to_column()`** function from the tibble package, and used **`mutate()`** to convert the "timestamp" column to a standard date format and sort the dataframe by date. Finally, we saved the cleaned and formatted dataframe for visualization.
+
+#### 1.5.2 Data Frame Pivot
+
+```{r}
+imports_filtered <- imports %>% # Select columns that contain "Data" or "2020", "2021", or "2022"
+  select(matches("Data|202[0-2]"))
+
+imports_pivot <- imports_filtered %>% # Reshape the data by converting columns to rows
+  pivot_longer(
+    cols = !"Data Series", # Exclude the "Data Series" column from reshaping
+    names_to = "timestamp", # Set the column containing the old column names as "timestamp" in the new long format
+    values_to = "value" # Set the values in the old columns as "value" in the new long format
+  ) %>%
+  mutate(timestamp = lubridate::ymd(paste0(timestamp, "01"))) %>% # Convert "timestamp" column to a standard date format
+  arrange(timestamp) # Sort the data frame by "timestamp" column in ascending order
+```
+
+```{r}
+exports_filtered <- exports %>% # Select columns that contain "Data" or "2020", "2021", or "2022"
+  select(matches("Data|202[0-2]"))
+
+exports_pivot <- imports_filtered %>% # Reshape the data by converting columns to rows
+  pivot_longer(
+    cols = !"Data Series", # Exclude the "Data Series" column from reshaping
+    names_to = "timestamp", # Set the column containing the old column names as "timestamp" in the new long format
+    values_to = "value" # Set the values in the old columns as "value" in the new long format
+  ) %>%
+  mutate(timestamp = lubridate::ymd(paste0(timestamp, "01"))) %>% # Convert "timestamp" column to a standard date format
+  arrange(timestamp) # Sort the data frame by "timestamp" column in ascending order
+
+```
+
+```{r}
+kable(head(exports_pivot))
+```
+
+The code is filtering and pivoting data. Firstly, it selects columns from the **`imports`** data frame that contain either "Data" or "2020", "2021", or "2022" using the **`select()`** function from the **`dplyr`** package. Then, it pivots the data frame into long format using the **`pivot_longer()`** function from the same package, specifying the columns to pivot using the **`cols`** argument and the names for the new columns using the **`names_to`** argument. After that, it converts the values in the **`timestamp`** column to date format using the **`ymd()`** function from the **`lubridate`** package and the **`mutate()`** function from **`dplyr`**. Finally, it sorts the resulting data frame by the **`timestamp`** column using the **`arrange()`** function.
+
+## 2.0 **Data Analysis and Visualizations**
+
+#### 2.1 **Horizon Plot: Average Import Prices from Different Countries (Jan 2020 to Dec 2022)**
+
+```{r fig.width=10, fig.height=20}
+imports_pivot %>% 
+  ggplot() +
+  geom_horizon(aes(x = timestamp, y=value), 
+               origin = "midpoint", 
+               horizonscale = 6)+
+  facet_grid(`Data Series`~.) +
+    theme_few() +
+  scale_fill_hcl(palette = 'RdBu') +
+  theme(panel.spacing.y=unit(0, "lines"), strip.text.y = element_text(
+    size = 5, angle = 0, hjust = 0),
+    legend.position = 'none',
+    axis.text.y = element_blank(),
+    axis.text.x = element_text(size=7),
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.border = element_blank()
+    ) +
+    scale_x_date(expand=c(0,0), date_breaks = "3 month", date_labels = "%b%y") +
+  ggtitle('Average Import Prices from Different Countries (Jan 2020 to Dec 2022)')
+```
+
+#### 2.2 Total Import and Export by Continents
+
+```{r}
+plot_ly(imports_transposed, x = ~timestamp, y = ~`Asia (Million Dollars)`, 
+        type = "scatter", mode = "lines", name="Asia", 
+        hovertemplate = "%{x}, %{y:.2f} Millon") %>%
+  add_lines(x=~timestamp, y=~`Europe (Million Dollars)`, 
+            name="EU", hovertemplate = "%{x}, %{y:.2f} Millon") %>%
+  add_lines(x=~timestamp, y=~`America (Million Dollars)`, 
+            name="America", hovertemplate = "%{x}, %{y:.2f} Millon") %>%
+  add_lines(x=~timestamp, y=~`Oceania (Million Dollars)`, 
+            name="Oceania", hovertemplate = "%{x}, %{y:.2f} Millon") %>%
+  add_lines(x=~timestamp, y=~`Africa (Million Dollars)`, 
+            name="Africa", hovertemplate = "%{x}, %{y:.2f} Millon") %>%
+  layout(title = "Total Imports by Continents over Time",
+         xaxis = list(title = "Date",
+                      tickformat = "%Y-%m",
+                      tickmode = "auto",
+                      nticks = 10),
+         yaxis = list(title = "Total Imports (Millons)"))
+```
+
+```{r}
+plot_ly(exports_transposed, x = ~timestamp, y = ~`Asia (Million Dollars)`, 
+        type = "scatter", mode = "lines", name="Asia", 
+        hovertemplate = "%{x}, %{y:.2f} Millon") %>%
+  add_lines(x=~timestamp, y=~`Europe (Million Dollars)`, 
+            name="EU", hovertemplate = "%{x}, %{y:.2f} Millon") %>%
+  add_lines(x=~timestamp, y=~`America (Million Dollars)`, 
+            name="America", hovertemplate = "%{x}, %{y:.2f} Millon") %>%
+  add_lines(x=~timestamp, y=~`Oceania (Million Dollars)`, 
+            name="Oceania", hovertemplate = "%{x}, %{y:.2f} Millon") %>%
+  add_lines(x=~timestamp, y=~`Africa (Million Dollars)`, 
+            name="Africa", hovertemplate = "%{x}, %{y:.2f} Millon") %>%
+  layout(title = "Total Exports by Continents over Time",
+         xaxis = list(title = "Date",
+                      tickformat = "%Y-%m",
+                      tickmode = "auto",
+                      nticks = 10),
+         yaxis = list(title = "Total Exports (Millons)"))
+```
+
+Insights: Asia has the highest amounts of both imports and exports. In addition, Singapore exports more to America than it imports. The export lines are relatively stable, while the import lines show more fluctuations.
+
+## 3.0 **Key Takeaways**
+
+One key takeaway from these points is that data manipulation and visualization are important skills for working with data, and learning how to pivot and transpose tables, convert values to date time format, and use horizon plots can be useful in analyzing and presenting data effectively.

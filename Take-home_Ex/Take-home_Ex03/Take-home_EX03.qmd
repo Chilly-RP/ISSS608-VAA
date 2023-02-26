@@ -57,7 +57,7 @@ DT::datatable(head(resale_345room_2022))
 
 ## 2.0 **Data Analysis and Visualizations**
 
-### 2.1 Average Resale Price Trend by Flat Type 
+### 2.1 Average Resale Price Trend by Flat Type
 
 ```{r}
 # Group data by flat type
