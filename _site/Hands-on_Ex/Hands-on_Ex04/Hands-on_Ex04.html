@@ -254,6 +254,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#import-data-set" id="toc-import-data-set" class="nav-link" data-scroll-target="#import-data-set">Import Data Set</a></li>
   <li><a href="#time-series-analysis" id="toc-time-series-analysis" class="nav-link" data-scroll-target="#time-series-analysis">Time Series Analysis</a></li>
   <li><a href="#group-plot" id="toc-group-plot" class="nav-link" data-scroll-target="#group-plot">Group Plot</a></li>
+  <li><a href="#seasonal-trends-analysis" id="toc-seasonal-trends-analysis" class="nav-link" data-scroll-target="#seasonal-trends-analysis">Seasonal Trends Analysis</a></li>
   </ul>
 </nav>
     </div>
@@ -286,7 +287,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">March 11, 2023</p>
+      <p class="date-modified">March 12, 2023</p>
     </div>
   </div>
     
@@ -392,10 +393,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="Hands-on_Ex04_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="1440"></p>
 </div>
 </div>
-<p>Seasonal Trends Analysis</p>
+</section>
+<section id="seasonal-trends-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="seasonal-trends-analysis">Seasonal Trends Analysis</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>price_daily <span class="sc">%&gt;%</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot_seasonal_diagnostics</span>(Date, <span class="st">`</span><span class="at">Price (EUR/MWhe)</span><span class="st">`</span>, <span class="at">.interactive =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    dplyr<span class="sc">::</span><span class="fu">filter</span>(Date <span class="sc">&gt;=</span> <span class="fu">as.Date</span>(<span class="st">"2022-01-01"</span>) <span class="sc">&amp;</span> Date <span class="sc">&lt;=</span> <span class="fu">as.Date</span>(<span class="st">"2022-12-31"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">plot_seasonal_diagnostics</span>(Date, <span class="st">`</span><span class="at">Price (EUR/MWhe)</span><span class="st">`</span>, <span class="at">.interactive =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="Hands-on_Ex04_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="960"></p>
 </div>

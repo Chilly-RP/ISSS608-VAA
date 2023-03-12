@@ -87,9 +87,10 @@ price_daily %>%
                    )
 ```
 
-Seasonal Trends Analysis
+## Seasonal Trends Analysis
 
 ```{r fig.width=10, fig.height=20}
 price_daily %>%
+    dplyr::filter(Date >= as.Date("2022-01-01") & Date <= as.Date("2022-12-31")) %>%
     plot_seasonal_diagnostics(Date, `Price (EUR/MWhe)`, .interactive = FALSE)
 ```

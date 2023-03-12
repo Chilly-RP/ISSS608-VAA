@@ -25,7 +25,14 @@
     "href": "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html#group-plot",
     "title": "Project",
     "section": "Group Plot",
-    "text": "Group Plot\nUser can edit Year and country\n\nlibrary(lubridate)\n\nprice_daily %>%\n  dplyr::filter(Date >= as.Date(\"2022-01-01\") & Date <= as.Date(\"2022-12-31\")) %>%\n  dplyr::mutate(month = month(Date)) %>%\n  dplyr::group_by(Country) %>%\n  dplyr::mutate(quarter= case_when(\n      month >= 1 & month <= 3 ~ 'Q1'\n      , month >= 4 & month <= 6 ~ 'Q2'\n      , month >= 7 & month <= 9 ~ 'Q3'\n      , month >= 10 & month <= 12 ~ 'Q4')) %>%\n  dplyr::filter(Country==\"France\") %>%\n\n  plot_time_series(.date_var=Date, .value = `Price (EUR/MWhe)`, \n                   .color_var = month (Date), \n                   .interactive=FALSE,\n                   .facet_ncol = 2, .facet_scales = \"free\",\n                   .title = \"Daily Electricity Price Bases on Individual Country in 2022\",\n                   .x_lab = \"Time period\",\n                   .y_lab = \"Price\",\n                   .color_lab = \"Month\") + scale_y_continuous(labels = scales::comma_format()\n                   )\n\n\n\n\nSeasonal Trends Analysis\n\nprice_daily %>%\n    plot_seasonal_diagnostics(Date, `Price (EUR/MWhe)`, .interactive = FALSE)"
+    "text": "Group Plot\nUser can edit Year and country\n\nlibrary(lubridate)\n\nprice_daily %>%\n  dplyr::filter(Date >= as.Date(\"2022-01-01\") & Date <= as.Date(\"2022-12-31\")) %>%\n  dplyr::mutate(month = month(Date)) %>%\n  dplyr::group_by(Country) %>%\n  dplyr::mutate(quarter= case_when(\n      month >= 1 & month <= 3 ~ 'Q1'\n      , month >= 4 & month <= 6 ~ 'Q2'\n      , month >= 7 & month <= 9 ~ 'Q3'\n      , month >= 10 & month <= 12 ~ 'Q4')) %>%\n  dplyr::filter(Country==\"France\") %>%\n\n  plot_time_series(.date_var=Date, .value = `Price (EUR/MWhe)`, \n                   .color_var = month (Date), \n                   .interactive=FALSE,\n                   .facet_ncol = 2, .facet_scales = \"free\",\n                   .title = \"Daily Electricity Price Bases on Individual Country in 2022\",\n                   .x_lab = \"Time period\",\n                   .y_lab = \"Price\",\n                   .color_lab = \"Month\") + scale_y_continuous(labels = scales::comma_format()\n                   )"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html#seasonal-trends-analysis",
+    "href": "Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html#seasonal-trends-analysis",
+    "title": "Project",
+    "section": "Seasonal Trends Analysis",
+    "text": "Seasonal Trends Analysis\n\nprice_daily %>%\n    dplyr::filter(Date >= as.Date(\"2022-01-01\") & Date <= as.Date(\"2022-12-31\")) %>%\n    plot_seasonal_diagnostics(Date, `Price (EUR/MWhe)`, .interactive = FALSE)"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
