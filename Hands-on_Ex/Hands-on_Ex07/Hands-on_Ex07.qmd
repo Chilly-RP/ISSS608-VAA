@@ -1,0 +1,284 @@
+---
+title: "Time Series Forecast"
+date-modified: "`r Sys.Date()`"
+execute: 
+  echo: true
+  eval: true
+  warning: false
+---
+
+## Load Data 
+
+```{r}
+pacman::p_load('dplyr','tidyverse','tidymodels','tidyquant','earth','timetk','recipes','tsibble','feasts','forecast','fable',
+             'tsibbletalk', 'tseries'
+             ,'modeltime','stats','data.table','ggplot2','plotly'
+             ,'rmarkdown','knitr','feasts','prophet')
+```
+
+```{r}
+price_daily = read_csv("../Hands-on_Ex04/data/daily.csv")
+
+paged_table(price_daily)
+```
+
+```{r}
+price_filtered <- price_daily %>%
+  filter(
+    Country == "Austria",
+  ) 
+price_filtered <- price_filtered[c("Date","Price (EUR/MWhe)")]
+```
+
+## Time Series Forecast
+
+### Append New Date 
+
+```{r}
+FORECAST_HORIZON = 360 # Change to user input
+
+price_filtered_extended = price_filtered %>%
+    future_frame(
+        .length_out = FORECAST_HORIZON,
+        .bind_data  = TRUE
+    ) %>%
+    ungroup()
+```
+
+### Train Test Split
+
+```{r}
+train_data = price_filtered_extended %>%
+    drop_na()
+test_data = price_filtered_extended %>%
+    filter(is.na(`Price (EUR/MWhe)`))
+```
+
+### **Model: Auto ARIMA XGBOOST**
+
+```{r}
+model_fit_arima_boosted = arima_boost(
+    min_n = 2,
+    learn_rate = 0.015
+) %>%
+    set_engine(engine = "auto_arima_xgboost") %>%
+    fit(`Price (EUR/MWhe)` ~ Date + as.numeric(Date),
+        data = train_data)
+```
+
+### **Model: Prophet**
+
+```{r}
+model_fit_prophet = prophet_reg() %>%
+    set_engine(engine = "prophet") %>%
+    fit(`Price (EUR/MWhe)` ~ Date, data = train_data)
+```
+
+### **Model: Exponential Smoothing**
+
+```{r}
+model_fit_ets = exp_smoothing() %>%
+    set_engine(engine = "ets") %>%
+    fit(`Price (EUR/MWhe)` ~ Date, data = train_data)
+```
+
+### **Model: Linear Regression**
+
+```{r}
+model_fit_lm = linear_reg() %>%
+    set_engine("lm") %>%
+    fit(`Price (EUR/MWhe)` ~ Date + as.numeric(Date),
+        data = train_data)
+```
+
+### Forecast Visualization 
+
+```{r}
+models_price = modeltime_table(
+    model_fit_arima_boosted,
+    model_fit_prophet,
+    model_fit_ets,
+    model_fit_lm
+)
+
+models_price %>%
+    modeltime_forecast(
+        new_data    = test_data,
+        actual_data = train_data
+    ) %>%
+    plot_modeltime_forecast(
+      .legend_max_width = 35, 
+      .interactive      = FALSE,
+      .plotly_slider=FALSE
+    )
+```
+
+## First-Order Differencing
+
+```{r}
+price_diff = diff(price_filtered$`Price (EUR/MWhe)`)
+```
+
+```{r}
+# Get the date column
+dates <- price_filtered$Date
+
+# Remove the first date
+dates_diff <- dates[-1]
+
+# Create a new data frame with the date and the differenced values
+price_diff_df <- data.frame(Date = dates_diff, Price_Diff = price_diff)
+```
+
+```{r}
+FORECAST_HORIZON = 360 # Change to user input
+
+price_diff_extended = price_diff_df %>%
+    future_frame(
+        .length_out = FORECAST_HORIZON,
+        .bind_data  = TRUE
+    ) %>%
+    ungroup()
+```
+
+```{r}
+train_data = price_diff_extended %>%
+    drop_na()
+test_data = price_diff_extended %>%
+    filter(is.na(`Price_Diff`))
+```
+
+### **Model: Auto ARIMA XGBOOST**
+
+```{r}
+model_fit_arima_boosted = arima_boost(
+    min_n = 2,
+    learn_rate = 0.015
+) %>%
+    set_engine(engine = "auto_arima_xgboost") %>%
+    fit(`Price_Diff` ~ Date + as.numeric(Date),
+        data = train_data)
+```
+
+```{r}
+models_price = modeltime_table(
+    model_fit_arima_boosted
+)
+
+fcast_diff = models_price %>%
+    modeltime_forecast(
+        new_data    = test_data,
+        actual_data = train_data
+    )
+```
+
+```{r}
+cumulative_sum <- cumsum(c(price_filtered$`Price (EUR/MWhe)`[1], fcast_diff$.value))[-1]
+```
+
+```{r}
+fcast_diff$.value <- cumulative_sum
+```
+
+```{r}
+fcast_diff%>%
+    plot_modeltime_forecast(
+      .legend_max_width = 35, 
+      .interactive      = FALSE,
+      .plotly_slider=FALSE
+    )
+```
+
+### **Model: Prophet**
+
+```{r}
+model_fit_prophet = prophet_reg() %>%
+    set_engine(engine = "prophet") %>%
+    fit(`Price_Diff` ~ Date, data = train_data)
+```
+
+```{r}
+models_price = modeltime_table(
+    model_fit_prophet
+)
+
+fcast_diff = models_price %>%
+    modeltime_forecast(
+        new_data    = test_data,
+        actual_data = train_data
+    )
+
+cumulative_sum <- cumsum(c(price_filtered$`Price (EUR/MWhe)`[1], fcast_diff$.value))[-1]
+
+fcast_diff$.value <- cumulative_sum
+
+fcast_diff%>%
+    plot_modeltime_forecast(
+      .legend_max_width = 35, 
+      .interactive      = FALSE,
+      .plotly_slider=FALSE
+    )
+```
+
+### **Model: Exponential Smoothing**
+
+```{r}
+model_fit_ets = exp_smoothing() %>%
+    set_engine(engine = "ets") %>%
+    fit(`Price_Diff` ~ Date, data = train_data)
+```
+
+```{r}
+models_price = modeltime_table(
+    model_fit_ets
+)
+
+fcast_diff = models_price %>%
+    modeltime_forecast(
+        new_data    = test_data,
+        actual_data = train_data
+    )
+
+cumulative_sum <- cumsum(c(price_filtered$`Price (EUR/MWhe)`[1], fcast_diff$.value))[-1]
+
+fcast_diff$.value <- cumulative_sum
+
+fcast_diff%>%
+    plot_modeltime_forecast(
+      .legend_max_width = 35, 
+      .interactive      = FALSE,
+      .plotly_slider=FALSE
+    )
+```
+
+### **Model: Linear Regression**
+
+```{r}
+model_fit_lm = linear_reg() %>%
+    set_engine("lm") %>%
+    fit(`Price_Diff` ~ Date + as.numeric(Date),
+        data = train_data)
+```
+
+```{r}
+models_price = modeltime_table(
+    model_fit_lm
+)
+
+fcast_diff = models_price %>%
+    modeltime_forecast(
+        new_data    = test_data,
+        actual_data = train_data
+    )
+
+cumulative_sum <- cumsum(c(price_filtered$`Price (EUR/MWhe)`[1], fcast_diff$.value))[-1]
+
+fcast_diff$.value <- cumulative_sum
+
+fcast_diff%>%
+    plot_modeltime_forecast(
+      .legend_max_width = 35, 
+      .interactive      = FALSE,
+      .plotly_slider=FALSE
+    )
+```
