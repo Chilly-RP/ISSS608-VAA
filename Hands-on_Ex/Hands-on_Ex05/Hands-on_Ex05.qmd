@@ -1,0 +1,278 @@
+---
+title: "Time Series Forecast"
+date-modified: "`r Sys.Date()`"
+execute: 
+  echo: true
+  eval: true
+  warning: false
+---
+
+```{r}
+pacman::p_load('dplyr','tidyverse','tidymodels','tidyquant','earth','timetk','recipes','tsibble','feasts','forecast','fable',
+             'tsibbletalk', 'tseries'
+             ,'modeltime','stats','data.table','ggplot2','plotly'
+             ,'rmarkdown','knitr','feasts')
+```
+
+```{r}
+price_daily = read_csv("../Hands-on_Ex04/data/daily.csv")
+
+paged_table(price_daily)
+```
+
+## ACF & PACF
+
+```{r}
+test <- price_daily %>%
+  filter(
+    Country == "Austria",
+  ) 
+test <- test[c("Date","Price (EUR/MWhe)")]
+```
+
+```{r}
+test_ts <- ts(test[,-1], start = c(2015, 1, 1),  
+                    end = c(2023, 2, 28),    
+                    frequency = 365)
+```
+
+------------------------------------------------------------------------
+
+```{r}
+adf.test(test_ts)
+```
+
+```{r}
+plot.ts(test_ts)
+```
+
+## Test Stationary: 
+
+```{r}
+adf.test(test$`Price (EUR/MWhe)`)
+```
+
+```{r}
+plot.ts(test$`Price (EUR/MWhe)`)
+```
+
+## Data Difference
+
+```{r}
+dtest=diff(test$`Price (EUR/MWhe)`)
+```
+
+```{r}
+adf.test(dtest)
+```
+
+```{r}
+plot.ts(dtest)
+```
+
+## Before Difference
+
+```{r}
+acf(test_ts)
+```
+
+```{r}
+pacf(test_ts)
+```
+
+## After Stationary
+
+```{r}
+acf(dtest)
+```
+
+```{r}
+pacf(dtest)
+```
+
+## Data Split
+
+```{r}
+price_daily_2022 <- price_daily%>%
+  dplyr::filter(Date >= as.Date("2020-01-01") & Date <= as.Date("2022-12-31") 
+                & Country == "Austria")
+# Split Data 80/20
+splits = initial_time_split(price_daily_2022, prop = 0.8)
+```
+
+### ** Model 1: Auto ARIMA**
+
+```{r}
+model_fit_arima_no_boost = arima_reg() %>%
+    set_engine(engine = "auto_arima") %>%
+    fit(`Price (EUR/MWhe)` ~ Date, data = training(splits))
+```
+
+### **Model 2: Boosted Auto ARIMA**
+
+```{r}
+model_fit_arima_boosted = arima_boost(
+    min_n = 2,
+    learn_rate = 0.015
+) %>%
+    set_engine(engine = "auto_arima_xgboost") %>%
+    fit(`Price (EUR/MWhe)` ~ Date + as.numeric(Date),
+        data = training(splits))
+```
+
+### **Model 4: Prophet**
+
+```{r}
+model_fit_prophet = prophet_reg() %>%
+    set_engine(engine = "prophet") %>%
+    fit(`Price (EUR/MWhe)` ~ Date, data = training(splits))
+```
+
+```{r}
+models_sq_stock = modeltime_table(
+    model_fit_arima_no_boost,
+    model_fit_arima_boosted,
+    model_fit_prophet
+)
+
+calibration_sq_stock = models_sq_stock %>%
+    modeltime_calibrate(new_data = testing(splits))
+
+calibration_sq_stock %>%
+    modeltime_forecast(
+        new_data    = testing(splits),
+        actual_data = price_daily_2022
+    ) %>%
+    plot_modeltime_forecast(
+      .legend_max_width = 35, 
+      .interactive      = FALSE,
+      .plotly_slider=FALSE
+    )
+```
+
+```{r}
+price_daily_2022%>% 
+  plot_time_series(
+    .date_var    = Date, 
+    .value       = `Price (EUR/MWhe)`, 
+    .smooth      = FALSE, 
+    .interactive = FALSE
+  )
+```
+
+```{r}
+FORECAST_HORIZON = 360
+
+price_daily_2022_extended = price_daily_2022 %>%
+    future_frame(
+        .length_out = FORECAST_HORIZON,
+        .bind_data  = TRUE
+    ) %>%
+    ungroup()
+```
+
+```{r}
+train_data = price_daily_2022_extended %>%
+    drop_na()
+test_data = price_daily_2022_extended %>%
+    filter(is.na(`Price (EUR/MWhe)`))
+```
+
+### Model: Auto ARIMA XGBOOST
+
+```{r}
+model_fit_arima_boosted = arima_boost(
+    min_n = 2,
+    learn_rate = 0.015
+) %>%
+    set_engine(engine = "auto_arima_xgboost") %>%
+    fit(`Price (EUR/MWhe)` ~ Date + as.numeric(Date),
+        data = train_data)
+```
+
+```{r}
+models_sq_stock = modeltime_table(
+    model_fit_arima_boosted
+)
+
+models_sq_stock %>%
+    modeltime_forecast(
+        new_data    = test_data,
+        actual_data = price_daily_2022
+    ) %>%
+    plot_modeltime_forecast(
+      .legend_max_width = 35, 
+      .interactive      = FALSE,
+      .plotly_slider=FALSE
+    )
+```
+
+### Test After Data Differencing
+
+```{r}
+model_fit_arima_no_boost = arima_reg() %>%
+    set_engine(engine = "auto_arima") %>%
+    fit(`Price (EUR/MWhe)` ~ Date, data = training(splits))
+```
+
+Convert the time series data to a **`tibble`** format using **`timetk`**:
+
+```{r}
+dates <- seq(as.Date("2015-01-01"), by = "day", length.out = length(dtest))
+time_series_tbl <- tibble(Date = dates, Value = dtest)
+
+```
+
+Fit an ARIMA model to the differenced data using the **`forecast`** package
+
+```{r}
+arima_model <- auto.arima(time_series_tbl$Value)
+```
+
+```{r}
+summary(arima_model)
+```
+
+Forecast
+
+```{r}
+n_forecast <- 360
+forecasted_diff <- forecast(arima_model, h = n_forecast)$mean
+
+```
+
+```{r}
+last_observed_value <- tail(test$`Price (EUR/MWhe)`, 1)
+forecasted_values <- cumsum(c(last_observed_value, forecasted_diff))
+forecasted_values <- forecasted_values[-1]
+
+#print(forecasted_values)
+```
+
+```{r}
+forecast_dates <- seq(tail(test$Date, 1) + days(1), by = "day", length.out = n_forecast)
+combined_dates <- c(test$Date, forecast_dates)
+combined_values <- c(test$`Price (EUR/MWhe)`, forecasted_values)
+
+
+```
+
+```{r}
+observed_type <- rep("Observed", length(test$Date))
+forecasted_type <- rep("Forecasted", n_forecast)
+combined_type <- c(observed_type, forecasted_type)
+
+combined_data <- tibble(Date = combined_dates, Value = combined_values,  Type = combined_type)
+
+```
+
+```{r}
+ggplot(combined_data, aes(x = Date, y = Value, color = Type)) +
+  geom_line() +
+  ggtitle("Time Series Forecast") +
+  xlab("Date") +
+  ylab("Value") +
+  scale_color_manual(values = c("blue", "green")) +
+  theme_minimal()
+
+```
