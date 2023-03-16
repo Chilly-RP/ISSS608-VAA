@@ -35,6 +35,83 @@
     "text": "Seasonal Trends Analysis\n\nprice_daily %>%\n    dplyr::filter(Date >= as.Date(\"2022-01-01\") & Date <= as.Date(\"2022-12-31\")) %>%\n    plot_seasonal_diagnostics(Date, `Price (EUR/MWhe)`, .interactive = FALSE)"
   },
   {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html",
+    "title": "Time Series Forecast",
+    "section": "",
+    "text": "pacman::p_load('dplyr','tidyverse','tidymodels','tidyquant','earth','timetk','recipes','tsibble','feasts','forecast','fable',\n             'tsibbletalk', 'tseries'\n             ,'modeltime','stats','data.table','ggplot2','plotly'\n             ,'rmarkdown','knitr','feasts','prophet')"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#acf-pacf",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#acf-pacf",
+    "title": "Time Series Forecast",
+    "section": "ACF & PACF",
+    "text": "ACF & PACF\n\ntest <- price_daily %>%\n  filter(\n    Country == \"Austria\",\n  ) \ntest <- test[c(\"Date\",\"Price (EUR/MWhe)\")]\n\n\ntest_ts <- ts(test[,-1], start = c(2015, 1, 1),  \n                    end = c(2023, 2, 28),    \n                    frequency = 365)\n\n\n\nadf.test(test_ts)\n\n\n    Augmented Dickey-Fuller Test\n\ndata:  test_ts\nDickey-Fuller = -4.3625, Lag order = 14, p-value = 0.01\nalternative hypothesis: stationary\n\n\n\nplot.ts(test_ts)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#test-stationary",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#test-stationary",
+    "title": "Time Series Forecast",
+    "section": "Test Stationary:",
+    "text": "Test Stationary:\n\nadf.test(test$`Price (EUR/MWhe)`)\n\n\n    Augmented Dickey-Fuller Test\n\ndata:  test$`Price (EUR/MWhe)`\nDickey-Fuller = -4.439, Lag order = 14, p-value = 0.01\nalternative hypothesis: stationary\n\n\n\nplot.ts(test$`Price (EUR/MWhe)`)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#data-difference",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#data-difference",
+    "title": "Time Series Forecast",
+    "section": "Data Difference",
+    "text": "Data Difference\n\ndtest=diff(test$`Price (EUR/MWhe)`)\n\n\nadf.test(dtest)\n\n\n    Augmented Dickey-Fuller Test\n\ndata:  dtest\nDickey-Fuller = -15.62, Lag order = 14, p-value = 0.01\nalternative hypothesis: stationary\n\n\n\nplot.ts(dtest)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#before-difference",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#before-difference",
+    "title": "Time Series Forecast",
+    "section": "Before Difference",
+    "text": "Before Difference\n\nacf(test_ts)\n\n\n\n\n\npacf(test_ts)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#after-stationary",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#after-stationary",
+    "title": "Time Series Forecast",
+    "section": "After Stationary",
+    "text": "After Stationary\n\nacf(dtest)\n\n\n\n\n\npacf(dtest)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#data-split",
+    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#data-split",
+    "title": "Time Series Forecast",
+    "section": "Data Split",
+    "text": "Data Split\n\nprice_daily_2022 <- price_daily%>%\n  dplyr::filter(Date >= as.Date(\"2020-01-01\") & Date <= as.Date(\"2022-12-31\") \n                & Country == \"Austria\")\n# Split Data 80/20\nsplits = initial_time_split(price_daily_2022, prop = 0.8)\n\n\n** Model 1: Auto ARIMA**\n\nmodel_fit_arima_no_boost = arima_reg() %>%\n    set_engine(engine = \"auto_arima\") %>%\n    fit(`Price (EUR/MWhe)` ~ Date, data = training(splits))\n\n\n\nModel 2: Boosted Auto ARIMA\n\nmodel_fit_arima_boosted = arima_boost(\n    min_n = 2,\n    learn_rate = 0.015\n) %>%\n    set_engine(engine = \"auto_arima_xgboost\") %>%\n    fit(`Price (EUR/MWhe)` ~ Date + as.numeric(Date),\n        data = training(splits))\n\n\n\nModel 4: Prophet\n\nmodel_fit_prophet = prophet_reg() %>%\n    set_engine(engine = \"prophet\") %>%\n    fit(`Price (EUR/MWhe)` ~ Date, data = training(splits))\n\n\nmodels_sq_stock = modeltime_table(\n    model_fit_arima_no_boost,\n    model_fit_arima_boosted,\n    model_fit_prophet\n)\n\ncalibration_sq_stock = models_sq_stock %>%\n    modeltime_calibrate(new_data = testing(splits))\n\ncalibration_sq_stock %>%\n    modeltime_forecast(\n        new_data    = testing(splits),\n        actual_data = price_daily_2022\n    ) %>%\n    plot_modeltime_forecast(\n      .legend_max_width = 35, \n      .interactive      = FALSE,\n      .plotly_slider=FALSE\n    )\n\n\n\n\n\nprice_daily_2022%>% \n  plot_time_series(\n    .date_var    = Date, \n    .value       = `Price (EUR/MWhe)`, \n    .smooth      = FALSE, \n    .interactive = FALSE\n  )\n\n\n\n\n\nFORECAST_HORIZON = 360\n\nprice_daily_2022_extended = price_daily_2022 %>%\n    future_frame(\n        .length_out = FORECAST_HORIZON,\n        .bind_data  = TRUE\n    ) %>%\n    ungroup()\n\n\ntrain_data = price_daily_2022_extended %>%\n    drop_na()\ntest_data = price_daily_2022_extended %>%\n    filter(is.na(`Price (EUR/MWhe)`))\n\n\n\nModel: Auto ARIMA XGBOOST\n\nmodel_fit_arima_boosted = arima_boost(\n    min_n = 2,\n    learn_rate = 0.015\n) %>%\n    set_engine(engine = \"auto_arima_xgboost\") %>%\n    fit(`Price (EUR/MWhe)` ~ Date + as.numeric(Date),\n        data = train_data)\n\n\nmodels_sq_stock = modeltime_table(\n    model_fit_arima_boosted\n)\n\nmodels_sq_stock %>%\n    modeltime_forecast(\n        new_data    = test_data,\n        actual_data = price_daily_2022\n    ) %>%\n    plot_modeltime_forecast(\n      .legend_max_width = 35, \n      .interactive      = FALSE,\n      .plotly_slider=FALSE\n    )\n\n\n\n\n\n\nTest After Data Differencing\nConvert the time series data to a tibble format using timetk:\n\ndates <- seq(as.Date(\"2015-01-01\"), by = \"day\", length.out = length(dtest))\ntime_series_tbl <- tibble(Date = dates, Value = dtest)\n\nFit an ARIMA model to the differenced data using the forecast package\n\narima_model <- auto.arima(time_series_tbl$Value)\n\n\nsummary(arima_model)\n\nSeries: time_series_tbl$Value \nARIMA(5,0,0) with zero mean \n\nCoefficients:\n          ar1      ar2      ar3      ar4      ar5\n      -0.0468  -0.3612  -0.1661  -0.1998  -0.2737\ns.e.   0.0176   0.0173   0.0182   0.0173   0.0176\n\nsigma^2 = 376.4:  log likelihood = -13062.81\nAIC=26137.61   AICc=26137.64   BIC=26173.61\n\nTraining set error measures:\n                     ME     RMSE      MAE MPE MAPE      MASE         ACF1\nTraining set 0.07151326 19.38362 10.46434 Inf  Inf 0.6357601 -0.009302856\n\n\nForecast\n\nn_forecast <- 360\nforecasted_diff <- forecast(arima_model, h = n_forecast)$mean\n\n\nlast_observed_value <- tail(test$`Price (EUR/MWhe)`, 1)\nforecasted_values <- cumsum(c(last_observed_value, forecasted_diff))\nforecasted_values <- forecasted_values[-1]\n\n#print(forecasted_values)\n\n\nforecast_dates <- seq(tail(test$Date, 1) + days(1), by = \"day\", length.out = n_forecast)\ncombined_dates <- c(test$Date, forecast_dates)\ncombined_values <- c(test$`Price (EUR/MWhe)`, forecasted_values)\n\n\nobserved_type <- rep(\"Observed\", length(test$Date))\nforecasted_type <- rep(\"Forecasted\", n_forecast)\ncombined_type <- c(observed_type, forecasted_type)\n\ncombined_data <- tibble(Date = combined_dates, Value = combined_values,  Type = combined_type)\n\n\nggplot(combined_data, aes(x = Date, y = Value, color = Type)) +\n  geom_line() +\n  ggtitle(\"Time Series Forecast\") +\n  xlab(\"Date\") +\n  ylab(\"Value\") +\n  scale_color_manual(values = c(\"blue\", \"green\")) +\n  theme_minimal()\n\n\n\n\n\n\nForecast Using Prophet\n\nprophet_data <- time_series_tbl %>%\n  rename(ds = Date, y = Value)\n\n\nprophet_model <- prophet(prophet_data)\n\n\nfuture_dates <- make_future_dataframe(prophet_model, periods = n_forecast, freq = \"day\")\n\n\nprophet_forecast <- predict(prophet_model, future_dates)\n\n\nforecasted_values_prophet <- tail(prophet_forecast$yhat, n_forecast)\n\n\nlast_observed_value <- tail(test$`Price (EUR/MWhe)`, 1)\nforecasted_values_prophet <- cumsum(c(last_observed_value, forecasted_values_prophet))\nforecasted_values_prophet <- forecasted_values_prophet[-1]\n\n\n\nTable Concat\n\nhistorical_data <- test %>%\n  rename(ds = Date, y = `Price (EUR/MWhe)`) %>%\n  mutate(Type = \"Observed\")\n\n\nforecast_dates <- seq(tail(test$Date, 1) + days(1), by = \"day\", length.out = n_forecast)\nforecast_data <- tibble(ds = forecast_dates, y = forecasted_values_prophet, Type = \"Forecasted\")\n\n\ncombined_data <- bind_rows(historical_data, forecast_data)\n\n\nlibrary(ggplot2)\n\nggplot(combined_data, aes(x = ds, y = y, color = Type)) +\n  geom_line() +\n  ggtitle(\"Time Series Forecast\") +\n  xlab(\"Date\") +\n  ylab(\"Value\") +\n  scale_color_manual(values = c(\"blue\", \"red\")) +\n  theme_minimal()\n\n\n\n\n\n\nExponential Smoothing State Space Model (ETS):\n\n# Fit the ETS model on the differenced data\nets_model_diff <- ets(time_series_tbl$Value)\n\n# Forecast the next n time points using the ETS model\nets_forecast_diff <- forecast(ets_model_diff, h = n_forecast)\n\n# Invert the first-order differencing\nets_forecast_original_scale <- cumsum(c(last_observed_value, ets_forecast_diff$mean))[-1]\n\n\nhistorical_data <- test %>%\n  rename(ds = Date, y = `Price (EUR/MWhe)`) %>%\n  mutate(Type = \"Observed\")\n\nets_forecast_dates <- seq(tail(test$Date, 1) + days(1), by = \"day\", length.out = n_forecast)\nets_forecast_data <- tibble(ds = ets_forecast_dates, y = ets_forecast_original_scale, Type = \"Forecasted\")\nets_combined_data <- bind_rows(historical_data, ets_forecast_data)\n\n\nggplot(ets_combined_data, aes(x = ds, y = y, color = Type)) +\n  geom_line() +\n  ggtitle(\"Time Series Forecast\") +\n  xlab(\"Date\") +\n  ylab(\"Value\") +\n  scale_color_manual(values = c(\"blue\", \"red\")) +\n  theme_minimal()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html",
+    "href": "Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html",
+    "title": "Time Series Analysis",
+    "section": "",
+    "text": "pacman::p_load('dplyr','tidyverse','tidymodels','tidyquant','earth','timetk','recipes','tsibble','feasts','forecast','fable',\n             'tsibbletalk', 'tseries'\n             ,'modeltime','stats','data.table','ggplot2','plotly'\n             ,'rmarkdown','knitr','feasts','prophet')"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html#load-data",
+    "href": "Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html#load-data",
+    "title": "Time Series Analysis",
+    "section": "Load Data",
+    "text": "Load Data\n\nprice_daily = read_csv(\"../Hands-on_Ex04/data/daily.csv\")\n\npaged_table(price_daily)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html#data-eda",
+    "href": "Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html#data-eda",
+    "title": "Time Series Analysis",
+    "section": "Data EDA",
+    "text": "Data EDA\nCountry Filter\n\nprice_daily_filtered <- price_daily %>%\n  filter(\n    Country == \"Austria\", # Change this by user selection\n  ) \n\nprice_daily_filtered <- price_daily_filtered[c(\"Date\",\"Price (EUR/MWhe)\")]\n\n\nStationary Test on Raw Data\n\nadf.test(price_daily_filtered$`Price (EUR/MWhe)`)\n\n\n    Augmented Dickey-Fuller Test\n\ndata:  price_daily_filtered$`Price (EUR/MWhe)`\nDickey-Fuller = -4.439, Lag order = 14, p-value = 0.01\nalternative hypothesis: stationary\n\n\nIt’s already a stationary data\n\n\nACF & PACF\n\nRAW Data\n\nplot.ts(price_daily_filtered$`Price (EUR/MWhe)`)\n\n\n\n\n\n\nACF\n\nacf(price_daily_filtered$`Price (EUR/MWhe)`,main = \"ACF for Raw Price\")\n\n\n\n\n\n\nPACF\n\npacf(price_daily_filtered$`Price (EUR/MWhe)`,main = \"PACF for Raw Price\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html#take-first-order-differencing",
+    "href": "Hands-on_Ex/Hands-on_Ex06/Hands-on_Ex06.html#take-first-order-differencing",
+    "title": "Time Series Analysis",
+    "section": "Take First-order Differencing",
+    "text": "Take First-order Differencing\n\nprice_daily_diff=diff(price_daily_filtered$`Price (EUR/MWhe)`)\n\n\nStationary Test\n\nadf.test(price_daily_diff)\n\n\n    Augmented Dickey-Fuller Test\n\ndata:  price_daily_diff\nDickey-Fuller = -15.62, Lag order = 14, p-value = 0.01\nalternative hypothesis: stationary\n\n\n\n\nDifferencing Data\n\nplot.ts(price_daily_diff)\n\n\n\n\n\n\nACF\n\nacf(price_daily_diff, main=\"ACF for Differencing Data\")\n\n\n\n\n\n\nPACF\n\nacf(price_daily_diff, main=\"PACF for Differencing Data\")"
+  },
+  {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
     "title": "Hands-on Exercise 1",
@@ -201,54 +278,5 @@
     "title": "In-Class Exercise 8",
     "section": "Network Metrics Analysis",
     "text": "Network Metrics Analysis\n\ng <- GAStech_graph %>%\n  mutate(betweenness_centrality = centrality_betweenness()) %>%\n  ggraph(layout = \"fr\") + \n  geom_edge_link(aes(width=Weight), \n                 alpha=0.2) +\n  scale_edge_width(range = c(0.1, 5)) +\n  geom_node_point(aes(colour = Department,\n            size=betweenness_centrality))\ng + theme_graph()\n\n\n\n\n\ng <- GAStech_graph %>%\n  ggraph(layout = \"fr\") + \n  geom_edge_link(aes(width=Weight), \n                 alpha=0.2) +\n  scale_edge_width(range = c(0.1, 5)) +\n  geom_node_point(aes(colour = Department, \n                      size = centrality_betweenness()))\ng + theme_graph()\n\n\n\n\n\ng <- GAStech_graph %>%\n  mutate(community = as.factor(group_edge_betweenness(weights = Weight, directed = TRUE))) %>%\n  ggraph(layout = \"fr\") + \n  geom_edge_link(aes(width=Weight), \n                 alpha=0.2) +\n  scale_edge_width(range = c(0.1, 5)) +\n  geom_node_point(aes(colour = community))  \n\ng + theme_graph()\n\n\n\n\n\nGAStech_edges_aggregated <- GAStech_edges %>%\n  left_join(GAStech_nodes, by = c(\"sourceLabel\" = \"label\")) %>%\n  rename(from = id) %>%\n  left_join(GAStech_nodes, by = c(\"targetLabel\" = \"label\")) %>%\n  rename(to = id) %>%\n  filter(MainSubject == \"Work related\") %>%\n  group_by(from, to) %>%\n    summarise(weight = n()) %>%\n  filter(from!=to) %>%\n  filter(weight > 1) %>%\n  ungroup()\n\n\nvisNetwork(GAStech_nodes, \n           GAStech_edges_aggregated)\n\n\n\n\n\n\nvisNetwork(GAStech_nodes,\n           GAStech_edges_aggregated) %>%\n  visIgraphLayout(layout = \"layout_with_fr\") \n\n\n\n\n\n\nGAStech_nodes <- GAStech_nodes %>%\n  rename(group = Department) \n\n\nvisNetwork(GAStech_nodes,\n           GAStech_edges_aggregated) %>%\n  visIgraphLayout(layout = \"layout_with_fr\") %>%\n  visLegend() %>%\n  visLayout(randomSeed = 123)\n\n\n\n\n\n\nvisNetwork(GAStech_nodes,\n           GAStech_edges_aggregated) %>%\n  visIgraphLayout(layout = \"layout_with_fr\") %>%\n  visEdges(arrows = \"to\", \n           smooth = list(enabled = TRUE, \n                         type = \"curvedCW\")) %>%\n  visLegend() %>%\n  visLayout(randomSeed = 123)\n\n\n\n\n\n\nvisNetwork(GAStech_nodes,\n           GAStech_edges_aggregated) %>%\n  visIgraphLayout(layout = \"layout_with_fr\") %>%\n  visOptions(highlightNearest = TRUE,\n             nodesIdSelection = TRUE) %>%\n  visLegend() %>%\n  visLayout(randomSeed = 123)"
-  },
-  {
-    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html",
-    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html",
-    "title": "Time Series Forecast",
-    "section": "",
-    "text": "pacman::p_load('dplyr','tidyverse','tidymodels','tidyquant','earth','timetk','recipes','tsibble','feasts','forecast','fable',\n             'tsibbletalk', 'tseries'\n             ,'modeltime','stats','data.table','ggplot2','plotly'\n             ,'rmarkdown','knitr','feasts')"
-  },
-  {
-    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#data-split",
-    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#data-split",
-    "title": "Time Series Forecast",
-    "section": "Data Split",
-    "text": "Data Split\n\nprice_daily_2022 <- price_daily%>%\n  dplyr::filter(Date >= as.Date(\"2020-01-01\") & Date <= as.Date(\"2022-12-31\") \n                & Country == \"Austria\")\n# Split Data 80/20\nsplits = initial_time_split(price_daily_2022, prop = 0.8)\n\n\n** Model 1: Auto ARIMA**\n\nmodel_fit_arima_no_boost = arima_reg() %>%\n    set_engine(engine = \"auto_arima\") %>%\n    fit(`Price (EUR/MWhe)` ~ Date, data = training(splits))\n\n\n\nModel 2: Boosted Auto ARIMA\n\nmodel_fit_arima_boosted = arima_boost(\n    min_n = 2,\n    learn_rate = 0.015\n) %>%\n    set_engine(engine = \"auto_arima_xgboost\") %>%\n    fit(`Price (EUR/MWhe)` ~ Date + as.numeric(Date),\n        data = training(splits))\n\n\n\nModel 4: Prophet\n\nmodel_fit_prophet = prophet_reg() %>%\n    set_engine(engine = \"prophet\") %>%\n    fit(`Price (EUR/MWhe)` ~ Date, data = training(splits))\n\n\nmodels_sq_stock = modeltime_table(\n    model_fit_arima_no_boost,\n    model_fit_arima_boosted,\n    model_fit_prophet\n)\n\ncalibration_sq_stock = models_sq_stock %>%\n    modeltime_calibrate(new_data = testing(splits))\n\ncalibration_sq_stock %>%\n    modeltime_forecast(\n        new_data    = testing(splits),\n        actual_data = price_daily_2022\n    ) %>%\n    plot_modeltime_forecast(\n      .legend_max_width = 35, \n      .interactive      = FALSE,\n      .plotly_slider=FALSE\n    )\n\n\n\n\n\nprice_daily_2022%>% \n  plot_time_series(\n    .date_var    = Date, \n    .value       = `Price (EUR/MWhe)`, \n    .smooth      = FALSE, \n    .interactive = FALSE\n  )\n\n\n\n\n\nFORECAST_HORIZON = 360\n\nprice_daily_2022_extended = price_daily_2022 %>%\n    future_frame(\n        .length_out = FORECAST_HORIZON,\n        .bind_data  = TRUE\n    ) %>%\n    ungroup()\n\n\ntrain_data = price_daily_2022_extended %>%\n    drop_na()\ntest_data = price_daily_2022_extended %>%\n    filter(is.na(`Price (EUR/MWhe)`))\n\n\n\nModel: Auto ARIMA XGBOOST\n\nmodel_fit_arima_boosted = arima_boost(\n    min_n = 2,\n    learn_rate = 0.015\n) %>%\n    set_engine(engine = \"auto_arima_xgboost\") %>%\n    fit(`Price (EUR/MWhe)` ~ Date + as.numeric(Date),\n        data = train_data)\n\n\nmodels_sq_stock = modeltime_table(\n    model_fit_arima_boosted\n)\n\nmodels_sq_stock %>%\n    modeltime_forecast(\n        new_data    = test_data,\n        actual_data = price_daily_2022\n    ) %>%\n    plot_modeltime_forecast(\n      .legend_max_width = 35, \n      .interactive      = FALSE,\n      .plotly_slider=FALSE\n    )\n\n\n\n\n\n\nTest After Data Differencing\n\nmodel_fit_arima_no_boost = arima_reg() %>%\n    set_engine(engine = \"auto_arima\") %>%\n    fit(`Price (EUR/MWhe)` ~ Date, data = training(splits))\n\nConvert the time series data to a tibble format using timetk:\n\ndates <- seq(as.Date(\"2015-01-01\"), by = \"day\", length.out = length(dtest))\ntime_series_tbl <- tibble(Date = dates, Value = dtest)\n\nFit an ARIMA model to the differenced data using the forecast package\n\narima_model <- auto.arima(time_series_tbl$Value)\n\n\nsummary(arima_model)\n\nSeries: time_series_tbl$Value \nARIMA(5,0,0) with zero mean \n\nCoefficients:\n          ar1      ar2      ar3      ar4      ar5\n      -0.0468  -0.3612  -0.1661  -0.1998  -0.2737\ns.e.   0.0176   0.0173   0.0182   0.0173   0.0176\n\nsigma^2 = 376.4:  log likelihood = -13062.81\nAIC=26137.61   AICc=26137.64   BIC=26173.61\n\nTraining set error measures:\n                     ME     RMSE      MAE MPE MAPE      MASE         ACF1\nTraining set 0.07151326 19.38362 10.46434 Inf  Inf 0.6357601 -0.009302856\n\n\nForecast\n\nn_forecast <- 360\nforecasted_diff <- forecast(arima_model, h = n_forecast)$mean\n\n\nlast_observed_value <- tail(test$`Price (EUR/MWhe)`, 1)\nforecasted_values <- cumsum(c(last_observed_value, forecasted_diff))\nforecasted_values <- forecasted_values[-1]\n\n#print(forecasted_values)\n\n\nforecast_dates <- seq(tail(test$Date, 1) + days(1), by = \"day\", length.out = n_forecast)\ncombined_dates <- c(test$Date, forecast_dates)\ncombined_values <- c(test$`Price (EUR/MWhe)`, forecasted_values)\n\n\nobserved_type <- rep(\"Observed\", length(test$Date))\nforecasted_type <- rep(\"Forecasted\", n_forecast)\ncombined_type <- c(observed_type, forecasted_type)\n\ncombined_data <- tibble(Date = combined_dates, Value = combined_values,  Type = combined_type)\n\n\nggplot(combined_data, aes(x = Date, y = Value, color = Type)) +\n  geom_line() +\n  ggtitle(\"Time Series Forecast\") +\n  xlab(\"Date\") +\n  ylab(\"Value\") +\n  scale_color_manual(values = c(\"blue\", \"green\")) +\n  theme_minimal()"
-  },
-  {
-    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#acf-pacf",
-    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#acf-pacf",
-    "title": "Time Series Forecast",
-    "section": "ACF & PACF",
-    "text": "ACF & PACF\n\ntest <- price_daily %>%\n  filter(\n    Country == \"Austria\",\n  ) \ntest <- test[c(\"Date\",\"Price (EUR/MWhe)\")]\n\n\ntest_ts <- ts(test[,-1], start = c(2015, 1, 1),  \n                    end = c(2023, 2, 28),    \n                    frequency = 365)\n\n\n\nadf.test(test_ts)\n\n\n    Augmented Dickey-Fuller Test\n\ndata:  test_ts\nDickey-Fuller = -4.3625, Lag order = 14, p-value = 0.01\nalternative hypothesis: stationary\n\n\n\nplot.ts(test_ts)"
-  },
-  {
-    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#test-stationary",
-    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#test-stationary",
-    "title": "Time Series Forecast",
-    "section": "Test Stationary:",
-    "text": "Test Stationary:\n\nadf.test(test$`Price (EUR/MWhe)`)\n\n\n    Augmented Dickey-Fuller Test\n\ndata:  test$`Price (EUR/MWhe)`\nDickey-Fuller = -4.439, Lag order = 14, p-value = 0.01\nalternative hypothesis: stationary\n\n\n\nplot.ts(test$`Price (EUR/MWhe)`)"
-  },
-  {
-    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#data-difference",
-    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#data-difference",
-    "title": "Time Series Forecast",
-    "section": "Data Difference",
-    "text": "Data Difference\n\ndtest=diff(test$`Price (EUR/MWhe)`)\n\n\nadf.test(dtest)\n\n\n    Augmented Dickey-Fuller Test\n\ndata:  dtest\nDickey-Fuller = -15.62, Lag order = 14, p-value = 0.01\nalternative hypothesis: stationary\n\n\n\nplot.ts(dtest)"
-  },
-  {
-    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#before-difference",
-    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#before-difference",
-    "title": "Time Series Forecast",
-    "section": "Before Difference",
-    "text": "Before Difference\n\nacf(test_ts)\n\n\n\n\n\npacf(test_ts)"
-  },
-  {
-    "objectID": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#after-stationary",
-    "href": "Hands-on_Ex/Hands-on_Ex05/Hands-on_Ex05.html#after-stationary",
-    "title": "Time Series Forecast",
-    "section": "After Stationary",
-    "text": "After Stationary\n\nacf(dtest)\n\n\n\n\n\npacf(dtest)"
   }
 ]

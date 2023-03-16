@@ -1,0 +1,96 @@
+---
+title: "Time Series Analysis"
+date-modified: "`r Sys.Date()`"
+execute: 
+  echo: true
+  eval: true
+  warning: false
+---
+
+## Load Packages
+
+```{r}
+pacman::p_load('dplyr','tidyverse','tidymodels','tidyquant','earth','timetk','recipes','tsibble','feasts','forecast','fable',
+             'tsibbletalk', 'tseries'
+             ,'modeltime','stats','data.table','ggplot2','plotly'
+             ,'rmarkdown','knitr','feasts','prophet')
+```
+
+## Load Data
+
+```{r}
+price_daily = read_csv("../Hands-on_Ex04/data/daily.csv")
+
+paged_table(price_daily)
+```
+
+## Data EDA
+
+**Country Filter**
+
+```{r}
+price_daily_filtered <- price_daily %>%
+  filter(
+    Country == "Austria", # Change this by user selection
+  ) 
+
+price_daily_filtered <- price_daily_filtered[c("Date","Price (EUR/MWhe)")]
+```
+
+### Stationary Test on Raw Data
+
+```{r}
+adf.test(price_daily_filtered$`Price (EUR/MWhe)`)
+```
+
+It's already a stationary data
+
+### ACF & PACF
+
+#### RAW Data
+
+```{r}
+plot.ts(price_daily_filtered$`Price (EUR/MWhe)`)
+```
+
+#### ACF
+
+```{r}
+acf(price_daily_filtered$`Price (EUR/MWhe)`,main = "ACF for Raw Price")
+```
+
+#### PACF
+
+```{r}
+pacf(price_daily_filtered$`Price (EUR/MWhe)`,main = "PACF for Raw Price")
+```
+
+## Take First-order Differencing
+
+```{r}
+price_daily_diff=diff(price_daily_filtered$`Price (EUR/MWhe)`)
+```
+
+### Stationary Test
+
+```{r}
+adf.test(price_daily_diff)
+```
+
+### Differencing Data
+
+```{r}
+plot.ts(price_daily_diff)
+```
+
+### ACF
+
+```{r}
+acf(price_daily_diff, main="ACF for Differencing Data")
+```
+
+### PACF
+
+```{r}
+acf(price_daily_diff, main="PACF for Differencing Data")
+```

@@ -11,7 +11,7 @@ execute:
 pacman::p_load('dplyr','tidyverse','tidymodels','tidyquant','earth','timetk','recipes','tsibble','feasts','forecast','fable',
              'tsibbletalk', 'tseries'
              ,'modeltime','stats','data.table','ggplot2','plotly'
-             ,'rmarkdown','knitr','feasts')
+             ,'rmarkdown','knitr','feasts','prophet')
 ```
 
 ```{r}
@@ -209,12 +209,6 @@ models_sq_stock %>%
 
 ### Test After Data Differencing
 
-```{r}
-model_fit_arima_no_boost = arima_reg() %>%
-    set_engine(engine = "auto_arima") %>%
-    fit(`Price (EUR/MWhe)` ~ Date, data = training(splits))
-```
-
 Convert the time series data to a **`tibble`** format using **`timetk`**:
 
 ```{r}
@@ -275,4 +269,103 @@ ggplot(combined_data, aes(x = Date, y = Value, color = Type)) +
   scale_color_manual(values = c("blue", "green")) +
   theme_minimal()
 
+```
+
+### Forecast Using Prophet
+
+```{r}
+prophet_data <- time_series_tbl %>%
+  rename(ds = Date, y = Value)
+```
+
+```{r}
+prophet_model <- prophet(prophet_data)
+```
+
+```{r}
+future_dates <- make_future_dataframe(prophet_model, periods = n_forecast, freq = "day")
+
+```
+
+```{r}
+prophet_forecast <- predict(prophet_model, future_dates)
+
+```
+
+```{r}
+forecasted_values_prophet <- tail(prophet_forecast$yhat, n_forecast)
+
+```
+
+```{r}
+last_observed_value <- tail(test$`Price (EUR/MWhe)`, 1)
+forecasted_values_prophet <- cumsum(c(last_observed_value, forecasted_values_prophet))
+forecasted_values_prophet <- forecasted_values_prophet[-1]
+```
+
+### Table Concat
+
+```{r}
+historical_data <- test %>%
+  rename(ds = Date, y = `Price (EUR/MWhe)`) %>%
+  mutate(Type = "Observed")
+```
+
+```{r}
+forecast_dates <- seq(tail(test$Date, 1) + days(1), by = "day", length.out = n_forecast)
+forecast_data <- tibble(ds = forecast_dates, y = forecasted_values_prophet, Type = "Forecasted")
+
+```
+
+```{r}
+combined_data <- bind_rows(historical_data, forecast_data)
+
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(combined_data, aes(x = ds, y = y, color = Type)) +
+  geom_line() +
+  ggtitle("Time Series Forecast") +
+  xlab("Date") +
+  ylab("Value") +
+  scale_color_manual(values = c("blue", "red")) +
+  theme_minimal()
+
+```
+
+### Exponential Smoothing State Space Model (ETS):
+
+```{r}
+# Fit the ETS model on the differenced data
+ets_model_diff <- ets(time_series_tbl$Value)
+
+# Forecast the next n time points using the ETS model
+ets_forecast_diff <- forecast(ets_model_diff, h = n_forecast)
+
+# Invert the first-order differencing
+ets_forecast_original_scale <- cumsum(c(last_observed_value, ets_forecast_diff$mean))[-1]
+
+```
+
+```{r}
+historical_data <- test %>%
+  rename(ds = Date, y = `Price (EUR/MWhe)`) %>%
+  mutate(Type = "Observed")
+
+ets_forecast_dates <- seq(tail(test$Date, 1) + days(1), by = "day", length.out = n_forecast)
+ets_forecast_data <- tibble(ds = ets_forecast_dates, y = ets_forecast_original_scale, Type = "Forecasted")
+ets_combined_data <- bind_rows(historical_data, ets_forecast_data)
+
+```
+
+```{r}
+ggplot(ets_combined_data, aes(x = ds, y = y, color = Type)) +
+  geom_line() +
+  ggtitle("Time Series Forecast") +
+  xlab("Date") +
+  ylab("Value") +
+  scale_color_manual(values = c("blue", "red")) +
+  theme_minimal()
 ```
